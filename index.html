@@ -40,10 +40,14 @@
                 </button>
             </div>
             <div id="exploreHeaderInfo">
-                <p class="text-sm text-gray-600">Standard Form: <span id="staticStandardForm" class="text-blue-700 font-bold text-lg"></span></p>
+                <div class="flex bg-blue-100/50 p-1 rounded-lg mb-4 w-full sm:w-64 mx-auto">
+                    <button id="formStdBtn" class="flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all">Standard Form</button>
+                    <button id="formVtxBtn" class="flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">Vertex Form</button>
+                </div>
+                <p class="text-sm text-gray-600 text-center mb-2">Form: <span id="staticFormLabel" class="text-blue-700 font-bold text-lg"></span></p>
                 
                 <!-- Dynamic Equation Display -->
-                <div class="mt-4 p-4 bg-white rounded-lg shadow-inner text-center overflow-x-auto">
+                <div class="p-4 bg-white rounded-lg shadow-inner text-center overflow-x-auto flex flex-col gap-2">
                     <span id="equationDisplay" class="text-2xl text-gray-800 font-semibold"></span>
                 </div>
             </div>
@@ -54,7 +58,7 @@
             <!-- EXPLORE MODE UI -->
             <div id="exploreModeUI" class="space-y-6 flex flex-col h-full">
                 <!-- Controls -->
-                <div class="space-y-5">
+                <div id="slidersStandard" class="space-y-5">
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                         <div class="flex justify-between items-center mb-2">
                             <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
@@ -100,6 +104,56 @@
                         <div class="flex items-center gap-3">
                             <input type="range" id="sliderC" min="-10" max="10" step="0.1" value="0" class="w-full">
                             <button id="animC" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="slidersVertex" class="space-y-5 hidden">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">a</span>
+                                Curvature & Direction
+                            </label>
+                            <span id="vaVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">1.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderVa" min="-5" max="5" step="0.1" value="1" class="w-full">
+                            <button id="animVa" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">h</span>
+                                Horizontal Shift
+                            </label>
+                            <span id="hVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderH" min="-10" max="10" step="0.1" value="0" class="w-full">
+                            <button id="animH" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">k</span>
+                                Vertical Shift
+                            </label>
+                            <span id="kVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderK" min="-10" max="10" step="0.1" value="0" class="w-full">
+                            <button id="animK" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
                                 <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </button>
                         </div>
@@ -170,6 +224,12 @@
                     
                     <div class="mt-auto pt-4 flex flex-col gap-2">
                         <p id="quizFeedback" class="text-center font-bold text-lg min-h-[28px] transition-colors"></p>
+                        
+                        <div id="quizHintContainer" class="hidden flex flex-col gap-2">
+                            <button id="hintBtn" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2 px-4 rounded-xl transition-colors shadow-sm border border-purple-200 text-sm">Need a Hint? (Show Vertex Form)</button>
+                            <p id="quizHintDisplay" class="hidden text-center text-xl text-indigo-700 font-bold bg-indigo-50 p-3 rounded-xl border border-indigo-100 overflow-x-auto"></p>
+                        </div>
+
                         <button id="checkAnswerBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-green-200">Check Answer</button>
                         <button id="nextQuestionBtn" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-blue-200">Next Question</button>
                     </div>
@@ -209,8 +269,14 @@
         a: 1.0,
         b: 0.0,
         c: 0.0,
-        animations: { a: false, b: false, c: false },
-        animationAngles: { a: 0, b: 0, c: 0 },
+        va: 1.0,
+        h: 0.0,
+        k: 0.0,
+        effA: 1.0,
+        effB: 0.0,
+        effC: 0.0,
+        animations: { a: false, b: false, c: false, va: false, h: false, k: false },
+        animationAngles: { a: 0, b: 0, c: 0, va: 0, h: 0, k: 0 },
         scale: 30, // pixels per math unit
         offsetX: 0,
         offsetY: 0,
@@ -219,6 +285,7 @@
         
         // New Quiz State
         mode: 'explore', // 'explore', 'quiz1', or 'quiz2'
+        formMode: 'standard', // 'standard' or 'vertex'
         quiz: {
             playerName: '',
             scoreCorrect: 0,
@@ -243,19 +310,28 @@
     const sliders = {
         a: document.getElementById('sliderA'),
         b: document.getElementById('sliderB'),
-        c: document.getElementById('sliderC')
+        c: document.getElementById('sliderC'),
+        va: document.getElementById('sliderVa'),
+        h: document.getElementById('sliderH'),
+        k: document.getElementById('sliderK')
     };
     
     const readouts = {
         a: document.getElementById('aVal'),
         b: document.getElementById('bVal'),
-        c: document.getElementById('cVal')
+        c: document.getElementById('cVal'),
+        va: document.getElementById('vaVal'),
+        h: document.getElementById('hVal'),
+        k: document.getElementById('kVal')
     };
 
     const animBtns = {
         a: document.getElementById('animA'),
         b: document.getElementById('animB'),
-        c: document.getElementById('animC')
+        c: document.getElementById('animC'),
+        va: document.getElementById('animVa'),
+        h: document.getElementById('animH'),
+        k: document.getElementById('animK')
     };
 
     const propsUI = {
@@ -270,6 +346,11 @@
     // New DOM Elements for Quiz
     const exploreModeUI = document.getElementById('exploreModeUI');
     const exploreHeaderInfo = document.getElementById('exploreHeaderInfo');
+    const staticFormLabel = document.getElementById('staticFormLabel');
+    const formStdBtn = document.getElementById('formStdBtn');
+    const formVtxBtn = document.getElementById('formVtxBtn');
+    const slidersStandard = document.getElementById('slidersStandard');
+    const slidersVertex = document.getElementById('slidersVertex');
     const quizModeUI = document.getElementById('quizModeUI');
     const toggleQuiz1Btn = document.getElementById('toggleQuiz1Btn');
     const toggleQuiz2Btn = document.getElementById('toggleQuiz2Btn');
@@ -286,6 +367,10 @@
     const checkAnswerBtn = document.getElementById('checkAnswerBtn');
     const nextQuestionBtn = document.getElementById('nextQuestionBtn');
     const quizFeedback = document.getElementById('quizFeedback');
+    
+    const hintBtn = document.getElementById('hintBtn');
+    const quizHintDisplay = document.getElementById('quizHintDisplay');
+    const quizHintContainer = document.getElementById('quizHintContainer');
 
     // Helper for KaTeX rendering
     function renderMath(str, el) {
@@ -299,7 +384,6 @@
     // Initialize
     function init() {
         // Render static math labels
-        renderMath("y = ax^2 + bx + c", document.getElementById('staticStandardForm'));
         renderMath("(h, k)", document.getElementById('labelVertex'));
         renderMath("y", document.getElementById('labelYInt'));
         renderMath("x", document.getElementById('labelXInt'));
@@ -308,7 +392,7 @@
         window.addEventListener('resize', resizeCanvas);
         
         // Setup slider listeners
-        ['a', 'b', 'c'].forEach(param => {
+        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
             sliders[param].addEventListener('input', (e) => {
                 state[param] = parseFloat(e.target.value);
                 state.animations[param] = false; // Stop animation if manually adjusted
@@ -329,6 +413,10 @@
             });
         });
 
+        // Form Mode Listeners
+        formStdBtn.addEventListener('click', () => toggleFormMode('standard'));
+        formVtxBtn.addEventListener('click', () => toggleFormMode('vertex'));
+
         // Quiz Event Listeners
         toggleQuiz1Btn.addEventListener('click', () => toggleMode('quiz1'));
         toggleQuiz2Btn.addEventListener('click', () => toggleMode('quiz2'));
@@ -337,6 +425,17 @@
         startQuizBtn.addEventListener('click', startQuiz);
         checkAnswerBtn.addEventListener('click', checkAnswer);
         nextQuestionBtn.addEventListener('click', generateQuestion);
+
+        hintBtn.addEventListener('click', () => {
+            hintBtn.classList.add('hidden');
+            quizHintDisplay.classList.remove('hidden');
+            const ta = state.quiz.targetEq.a;
+            const tb = state.quiz.targetEq.b;
+            const tc = state.quiz.targetEq.c;
+            const th = -tb / (2 * ta);
+            const tk = ta * th * th + tb * th + tc;
+            renderMath(formatVertexEquation(ta, th, tk), quizHintDisplay);
+        });
 
         // Mouse interaction for tooltip and dragging
         canvas.addEventListener('mousemove', handleMouseMove);
@@ -348,6 +447,7 @@
         });
 
         // Start render loop
+        toggleFormMode(state.formMode);
         requestAnimationFrame(renderLoop);
         update();
     }
@@ -371,7 +471,7 @@
     }
 
     function updateBtnStyles() {
-        ['a', 'b', 'c'].forEach(param => {
+        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
             if (state.animations[param]) {
                 animBtns[param].classList.add('bg-blue-500', 'text-white');
                 animBtns[param].classList.remove('bg-gray-200', 'text-gray-700');
@@ -385,6 +485,24 @@
     }
 
     // Quiz Logic Functions
+    function toggleFormMode(mode) {
+        state.formMode = mode;
+        if (mode === 'standard') {
+            formStdBtn.className = "flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all";
+            formVtxBtn.className = "flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+            slidersStandard.classList.remove('hidden');
+            slidersVertex.classList.add('hidden');
+            renderMath("y = ax^2 + bx + c", staticFormLabel);
+        } else {
+            formVtxBtn.className = "flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all";
+            formStdBtn.className = "flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+            slidersStandard.classList.add('hidden');
+            slidersVertex.classList.remove('hidden');
+            renderMath("y = a(x-h)^2 + k", staticFormLabel);
+        }
+        update();
+    }
+
     function toggleMode(modeName) {
         if (modeName === 'explore') {
             state.mode = 'explore';
@@ -396,6 +514,9 @@
             toggleQuiz1Btn.classList.remove('hidden');
             toggleQuiz2Btn.classList.remove('hidden');
             exitQuizBtn.classList.add('hidden');
+            
+            // Re-sync form toggle
+            toggleFormMode(state.formMode);
         } else {
             state.mode = modeName;
             exploreModeUI.classList.add('hidden');
@@ -413,8 +534,10 @@
 
             if (modeName === 'quiz1') {
                 quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-orange-600 font-bold">two orange x-intercepts</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
+                quizHintContainer.classList.add('hidden');
             } else if (modeName === 'quiz2') {
                 quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-red-600 font-bold">red vertex</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
+                quizHintContainer.classList.remove('hidden');
             }
         }
         update();
@@ -446,6 +569,15 @@
         quizFeedback.innerText = '';
         checkAnswerBtn.classList.remove('hidden');
         nextQuestionBtn.classList.add('hidden');
+
+        // Reset Hint UI for new question
+        quizHintDisplay.classList.add('hidden');
+        if (state.mode === 'quiz2') {
+            hintBtn.classList.remove('hidden');
+            quizHintContainer.classList.remove('hidden');
+        } else {
+            quizHintContainer.classList.add('hidden');
+        }
 
         if (state.mode === 'quiz1') {
             let r1, r2, a, b, c;
@@ -651,6 +783,34 @@
         return eq;
     }
 
+    function formatVertexEquation(a, h, k) {
+        if (a === 0) return "\\text{N/A}";
+        let eq = "y = ";
+        
+        // Term a
+        if (a === -1) eq += "-";
+        else if (a !== 1) eq += `${round(a)}`;
+        
+        // Term (x - h)^2
+        if (round(h) === 0) {
+            eq += "x^2";
+        } else {
+            let hSign = h > 0 ? "-" : "+";
+            let absH = Math.abs(round(h));
+            eq += `(x ${hSign} ${absH})^2`;
+        }
+        
+        // Term k
+        let roundedK = round(k);
+        if (roundedK > 0) {
+            eq += ` + ${roundedK}`;
+        } else if (roundedK < 0) {
+            eq += ` - ${Math.abs(roundedK)}`;
+        }
+        
+        return eq;
+    }
+
     function round(val) {
         return Math.round(val * 100) / 100;
     }
@@ -660,19 +820,37 @@
         readouts.a.innerText = state.a.toFixed(1);
         readouts.b.innerText = state.b.toFixed(1);
         readouts.c.innerText = state.c.toFixed(1);
+        readouts.va.innerText = state.va.toFixed(1);
+        readouts.h.innerText = state.h.toFixed(1);
+        readouts.k.innerText = state.k.toFixed(1);
         
         // Sync Sliders if animating
         sliders.a.value = state.a;
         sliders.b.value = state.b;
         sliders.c.value = state.c;
+        sliders.va.value = state.va;
+        sliders.h.value = state.h;
+        sliders.k.value = state.k;
 
         // Calculate Properties
-        const a = state.a;
-        const b = state.b;
-        const c = state.c;
+        let a, b, c;
+        if (state.formMode === 'standard') {
+            a = state.a;
+            b = state.b;
+            c = state.c;
+            renderMath(formatEquation(a, b, c), propsUI.eq);
+        } else {
+            a = state.va;
+            const h = state.h;
+            const k = state.k;
+            b = -2 * a * h;
+            c = a * h * h + k;
+            renderMath(formatVertexEquation(a, h, k), propsUI.eq);
+        }
 
-        // Equation
-        renderMath(formatEquation(a, b, c), propsUI.eq);
+        state.effA = a;
+        state.effB = b;
+        state.effC = c;
 
         if (a === 0) {
             // Linear degenerate case
@@ -794,7 +972,7 @@
     }
 
     function drawParabola() {
-        const { a, b, c } = state;
+        const { effA: a, effB: b, effC: c } = state;
         const leftMathX = canvasToMathX(0);
         const rightMathX = canvasToMathX(state.width);
         const step = (rightMathX - leftMathX) / 200; // Resolution
@@ -833,7 +1011,7 @@
     }
 
     function drawFeatures() {
-        const { a, b, c } = state;
+        const { effA: a, effB: b, effC: c } = state;
 
         if (a !== 0) {
             // Axis of Symmetry
@@ -960,7 +1138,7 @@
     function renderLoop() {
         let changed = false;
 
-        ['a', 'b', 'c'].forEach(param => {
+        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
             if (state.animations[param]) {
                 const speed = 0.02;
                 state.animationAngles[param] += speed;
@@ -1060,7 +1238,7 @@
         // Standard Explore Mode Tooltip
         canvas.style.cursor = 'crosshair';
         const mathX = canvasToMathX(mouseX);
-        const mathY = state.a * mathX * mathX + state.b * mathX + state.c;
+        const mathY = state.effA * mathX * mathX + state.effB * mathX + state.effC;
         
         const canvasY = mathToCanvasY(mathY);
 
