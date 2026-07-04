@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties of Quadratic Functions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Add KaTeX for LaTeX Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    
+    <style>
+        /* Custom scrollbar for control panel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        input[type=range] {
+            accent-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans h-screen overflow-hidden flex flex-col md:flex-row">
+
+    <!-- Control Panel -->
+    <div class="w-full md:w-1/2 bg-white shadow-xl flex flex-col h-1/2 md:h-full z-10 overflow-y-auto">
+        <div class="p-6 border-b border-gray-100 bg-blue-50 relative">
+            <div class="flex flex-wrap justify-between items-start mb-2 gap-2">
+                <h1 class="text-2xl font-bold text-gray-900 w-full sm:w-auto flex-grow">Quadratic Explorer</h1>
+                <button id="toggleQuiz1Btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
+                    Quiz: Roots
+                </button>
+                <button id="toggleQuiz2Btn" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
+                    Quiz: Vertex
+                </button>
+                <button id="exitQuizBtn" class="hidden bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
+                    Exit Quiz
+                </button>
+            </div>
+            <div id="exploreHeaderInfo">
+                <p class="text-sm text-gray-600">Standard Form: <span id="staticStandardForm" class="text-blue-700 font-bold text-lg"></span></p>
+                
+                <!-- Dynamic Equation Display -->
+                <div class="mt-4 p-4 bg-white rounded-lg shadow-inner text-center overflow-x-auto">
+                    <span id="equationDisplay" class="text-2xl text-gray-800 font-semibold"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 flex-grow flex flex-col gap-6 relative">
+            
+            <!-- EXPLORE MODE UI -->
+            <div id="exploreModeUI" class="space-y-6 flex flex-col h-full">
+                <!-- Controls -->
+                <div class="space-y-5">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">a</span>
+                                Curvature & Direction
+                            </label>
+                            <span id="aVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">1.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderA" min="-5" max="5" step="0.1" value="1" class="w-full">
+                            <button id="animA" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slider B -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">b</span>
+                                Horizontal Shift
+                            </label>
+                            <span id="bVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderB" min="-10" max="10" step="0.1" value="0" class="w-full">
+                            <button id="animB" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slider C -->
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">c</span>
+                                Vertical Shift
+                            </label>
+                            <span id="cVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderC" min="-10" max="10" step="0.1" value="0" class="w-full">
+                            <button id="animC" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
+                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Properties Readout -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mt-4">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Mathematical Properties</h3>
+                    
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
+                            <span class="text-gray-600">Opens:</span>
+                            <span id="propDirection" class="font-semibold text-blue-600">Upwards</span>
+                        </li>
+                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
+                            <span class="flex items-center gap-1 text-gray-600">
+                                <div class="w-2 h-2 rounded-full bg-red-500"></div> Vertex <span id="labelVertex"></span>:
+                            </span>
+                            <span id="propVertex" class="font-semibold text-red-600 text-base"></span>
+                        </li>
+                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
+                            <span class="flex items-center gap-1 text-gray-600">
+                                <div class="w-3 h-0 border-t-2 border-dashed border-red-400"></div> Axis of Symmetry:
+                            </span>
+                            <span id="propAxis" class="font-semibold text-red-500 text-base"></span>
+                        </li>
+                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
+                            <span class="flex items-center gap-1 text-gray-600">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div> <span id="labelYInt"></span>-intercept:
+                            </span>
+                            <span id="propYInt" class="font-semibold text-green-600 text-base"></span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="flex items-center gap-1 text-gray-600">
+                                <div class="w-2 h-2 rounded-full bg-orange-500"></div> Roots (<span id="labelXInt"></span>-intercepts):
+                            </span>
+                            <span id="propRoots" class="font-semibold text-orange-600 text-base"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- QUIZ MODE UI (Hidden by default) -->
+            <div id="quizModeUI" class="hidden flex flex-col gap-4 h-full">
+                <div id="quizSetup" class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
+                    <h2 class="text-lg font-bold text-indigo-900">Welcome to Quiz Mode!</h2>
+                    <p class="text-sm text-indigo-700">Test your skills by matching the graph to the equation.</p>
+                    <input type="text" id="quizPlayerNameInput" placeholder="Enter your name" class="px-4 py-2 rounded border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button id="startQuizBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors shadow">Start Playing</button>
+                </div>
+
+                <div id="quizActive" class="hidden flex flex-col gap-4 h-full">
+                    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <span class="font-bold text-gray-700">Player: <span id="quizDisplayPlayer" class="text-indigo-600"></span></span>
+                        <span class="font-bold text-gray-700">Score: <span id="quizDisplayScore" class="text-green-600 text-lg">0 / 0</span></span>
+                    </div>
+                    
+                    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Target Equation</h3>
+                        <div class="p-4 bg-gray-50 rounded-lg shadow-inner mb-4 overflow-x-auto">
+                            <span id="quizTargetEqDisplay" class="text-2xl text-gray-800 font-semibold"></span>
+                        </div>
+                        <p id="quizInstructions" class="text-sm text-gray-600 text-left bg-blue-50 p-3 rounded border border-blue-100">
+                            <!-- Populated by JS based on Mode -->
+                        </p>
+                    </div>
+                    
+                    <div class="mt-auto pt-4 flex flex-col gap-2">
+                        <p id="quizFeedback" class="text-center font-bold text-lg min-h-[28px] transition-colors"></p>
+                        <button id="checkAnswerBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-green-200">Check Answer</button>
+                        <button id="nextQuestionBtn" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-blue-200">Next Question</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Graph Area -->
+    <div class="w-full md:w-1/2 h-1/2 md:h-full relative bg-white" id="canvasContainer">
+        <!-- Interactive Graph Canvas -->
+        <canvas id="graphCanvas" class="w-full h-full cursor-crosshair"></canvas>
+        
+        <!-- Legend Overlay -->
+        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md border border-gray-100 text-xs text-gray-600 pointer-events-none">
+            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-1 bg-blue-500 rounded"></div> Parabola Function</div>
+            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 rounded-full bg-red-500 ml-0.5"></div> Vertex</div>
+            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-0 border-t-2 border-dashed border-red-400"></div> Axis of Symmetry</div>
+            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 rounded-full bg-green-500 ml-0.5"></div> y-intercept</div>
+            <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-500 ml-0.5"></div> x-intercepts (Roots)</div>
+        </div>
+        
+        <!-- Floating coordinate tooltip -->
+        <div id="tooltip" class="absolute hidden bg-gray-900 text-white text-sm font-bold px-3 py-2 rounded pointer-events-none transform -translate-x-1/2 -translate-y-[150%] transition-opacity shadow-lg">
+            (0, 0)
+        </div>
+    </div>
+
+<script>
+    // --- GOOGLE APPS SCRIPT SETTINGS ---
+    // PASTE YOUR PUBLISHED WEB APP URL HERE:
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEffCI-yMgAIwcvvu73kZC2to4WYvueGwVDAEFRW_itawbBWX2sQw4wcbmULerm4E/exec"; 
+    
+    // App State
+    let state = {
+        a: 1.0,
+        b: 0.0,
+        c: 0.0,
+        animations: { a: false, b: false, c: false },
+        animationAngles: { a: 0, b: 0, c: 0 },
+        scale: 30, // pixels per math unit
+        offsetX: 0,
+        offsetY: 0,
+        width: 0,
+        height: 0,
+        
+        // New Quiz State
+        mode: 'explore', // 'explore', 'quiz1', or 'quiz2'
+        quiz: {
+            playerName: '',
+            scoreCorrect: 0,
+            scoreAttempted: 0,
+            active: false,
+            isEvaluating: false,
+            showTargetGraph: false,
+            targetEq: { a: 1, b: 0, c: 0 },
+            targetRoots: [0, 0],
+            targetYInt: 0,
+            points: [],
+            draggedPointId: null
+        }
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvasContainer');
+    const tooltip = document.getElementById('tooltip');
+
+    const sliders = {
+        a: document.getElementById('sliderA'),
+        b: document.getElementById('sliderB'),
+        c: document.getElementById('sliderC')
+    };
+    
+    const readouts = {
+        a: document.getElementById('aVal'),
+        b: document.getElementById('bVal'),
+        c: document.getElementById('cVal')
+    };
+
+    const animBtns = {
+        a: document.getElementById('animA'),
+        b: document.getElementById('animB'),
+        c: document.getElementById('animC')
+    };
+
+    const propsUI = {
+        eq: document.getElementById('equationDisplay'),
+        dir: document.getElementById('propDirection'),
+        vertex: document.getElementById('propVertex'),
+        axis: document.getElementById('propAxis'),
+        yint: document.getElementById('propYInt'),
+        roots: document.getElementById('propRoots')
+    };
+
+    // New DOM Elements for Quiz
+    const exploreModeUI = document.getElementById('exploreModeUI');
+    const exploreHeaderInfo = document.getElementById('exploreHeaderInfo');
+    const quizModeUI = document.getElementById('quizModeUI');
+    const toggleQuiz1Btn = document.getElementById('toggleQuiz1Btn');
+    const toggleQuiz2Btn = document.getElementById('toggleQuiz2Btn');
+    const exitQuizBtn = document.getElementById('exitQuizBtn');
+    
+    const quizSetup = document.getElementById('quizSetup');
+    const quizActive = document.getElementById('quizActive');
+    const quizPlayerNameInput = document.getElementById('quizPlayerNameInput');
+    const startQuizBtn = document.getElementById('startQuizBtn');
+    const quizDisplayPlayer = document.getElementById('quizDisplayPlayer');
+    const quizDisplayScore = document.getElementById('quizDisplayScore');
+    const quizTargetEqDisplay = document.getElementById('quizTargetEqDisplay');
+    const quizInstructions = document.getElementById('quizInstructions');
+    const checkAnswerBtn = document.getElementById('checkAnswerBtn');
+    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+    const quizFeedback = document.getElementById('quizFeedback');
+
+    // Helper for KaTeX rendering
+    function renderMath(str, el) {
+        if (window.katex && el) {
+            katex.render(str, el, { throwOnError: false, displayMode: false });
+        } else if (el) {
+            el.innerText = str;
+        }
+    }
+
+    // Initialize
+    function init() {
+        // Render static math labels
+        renderMath("y = ax^2 + bx + c", document.getElementById('staticStandardForm'));
+        renderMath("(h, k)", document.getElementById('labelVertex'));
+        renderMath("y", document.getElementById('labelYInt'));
+        renderMath("x", document.getElementById('labelXInt'));
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Setup slider listeners
+        ['a', 'b', 'c'].forEach(param => {
+            sliders[param].addEventListener('input', (e) => {
+                state[param] = parseFloat(e.target.value);
+                state.animations[param] = false; // Stop animation if manually adjusted
+                updateBtnStyles();
+                update();
+            });
+
+            animBtns[param].addEventListener('click', () => {
+                state.animations[param] = !state.animations[param];
+                // Sync animation angle to current slider value to prevent jumping
+                if (state.animations[param]) {
+                    let range = parseFloat(sliders[param].max) - parseFloat(sliders[param].min);
+                    let mid = (parseFloat(sliders[param].max) + parseFloat(sliders[param].min)) / 2;
+                    let norm = (state[param] - mid) / (range / 2);
+                    state.animationAngles[param] = Math.asin(Math.max(-1, Math.min(1, norm)));
+                }
+                updateBtnStyles();
+            });
+        });
+
+        // Quiz Event Listeners
+        toggleQuiz1Btn.addEventListener('click', () => toggleMode('quiz1'));
+        toggleQuiz2Btn.addEventListener('click', () => toggleMode('quiz2'));
+        exitQuizBtn.addEventListener('click', () => toggleMode('explore'));
+        
+        startQuizBtn.addEventListener('click', startQuiz);
+        checkAnswerBtn.addEventListener('click', checkAnswer);
+        nextQuestionBtn.addEventListener('click', generateQuestion);
+
+        // Mouse interaction for tooltip and dragging
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.classList.add('hidden');
+            state.quiz.draggedPointId = null;
+        });
+
+        // Start render loop
+        requestAnimationFrame(renderLoop);
+        update();
+    }
+
+    function resizeCanvas() {
+        const rect = container.getBoundingClientRect();
+        // Setup high-DPI display
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        
+        state.width = rect.width;
+        state.height = rect.height;
+        state.offsetX = state.width / 2;
+        state.offsetY = state.height / 2;
+        
+        draw();
+    }
+
+    function updateBtnStyles() {
+        ['a', 'b', 'c'].forEach(param => {
+            if (state.animations[param]) {
+                animBtns[param].classList.add('bg-blue-500', 'text-white');
+                animBtns[param].classList.remove('bg-gray-200', 'text-gray-700');
+                animBtns[param].innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else {
+                animBtns[param].classList.remove('bg-blue-500', 'text-white');
+                animBtns[param].classList.add('bg-gray-200', 'text-gray-700');
+                animBtns[param].innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+        });
+    }
+
+    // Quiz Logic Functions
+    function toggleMode(modeName) {
+        if (modeName === 'explore') {
+            state.mode = 'explore';
+            state.quiz.active = false;
+            exploreModeUI.classList.remove('hidden');
+            exploreHeaderInfo.classList.remove('hidden');
+            quizModeUI.classList.add('hidden');
+            
+            toggleQuiz1Btn.classList.remove('hidden');
+            toggleQuiz2Btn.classList.remove('hidden');
+            exitQuizBtn.classList.add('hidden');
+        } else {
+            state.mode = modeName;
+            exploreModeUI.classList.add('hidden');
+            exploreHeaderInfo.classList.add('hidden');
+            quizModeUI.classList.remove('hidden');
+            
+            toggleQuiz1Btn.classList.add('hidden');
+            toggleQuiz2Btn.classList.add('hidden');
+            exitQuizBtn.classList.remove('hidden');
+            
+            // Ensure Setup is shown
+            quizSetup.classList.remove('hidden');
+            quizActive.classList.add('hidden');
+            state.quiz.active = false;
+
+            if (modeName === 'quiz1') {
+                quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-orange-600 font-bold">two orange x-intercepts</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
+            } else if (modeName === 'quiz2') {
+                quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-red-600 font-bold">red vertex</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
+            }
+        }
+        update();
+    }
+
+    function startQuiz() {
+        const name = quizPlayerNameInput.value.trim();
+        if (!name) {
+            alert("Please enter your name to start.");
+            return;
+        }
+        state.quiz.playerName = name;
+        state.quiz.scoreCorrect = 0;
+        state.quiz.scoreAttempted = 0;
+        state.quiz.active = true;
+        
+        quizSetup.classList.add('hidden');
+        quizActive.classList.remove('hidden');
+        
+        quizDisplayPlayer.innerText = name;
+        updateQuizScore();
+        
+        generateQuestion();
+    }
+
+    function generateQuestion() {
+        state.quiz.isEvaluating = false;
+        state.quiz.showTargetGraph = false;
+        quizFeedback.innerText = '';
+        checkAnswerBtn.classList.remove('hidden');
+        nextQuestionBtn.classList.add('hidden');
+
+        if (state.mode === 'quiz1') {
+            let r1, r2, a, b, c;
+            do {
+                r1 = Math.floor(Math.random() * 11) - 5; // -5 to 5
+                r2 = Math.floor(Math.random() * 11) - 5;
+                const a_opts = [1, -1, 0.5, -0.5, 2, -2];
+                a = a_opts[Math.floor(Math.random() * a_opts.length)]; 
+                c = a * r1 * r2;
+                b = -a * (r1 + r2);
+            } while (
+                r1 === r2 || r1 === 0 || r2 === 0 || !Number.isInteger(c) || Math.abs(c) > 8
+            ); 
+            
+            state.quiz.targetEq = {a, b, c};
+            state.quiz.targetRoots = [r1, r2].sort((x,y)=>x-y);
+            state.quiz.targetYInt = c;
+
+            // Reset draggable points
+            state.quiz.points = [
+                { id: 'r1', type: 'root', x: -3, y: 0, color: '#f97316' },
+                { id: 'r2', type: 'root', x: 3, y: 0, color: '#f97316' },
+                { id: 'y1', type: 'yint', x: 0, y: -2, color: '#22c55e' }
+            ];
+            
+        } else if (state.mode === 'quiz2') {
+            let h, k, a, b, c;
+            
+            // Randomly decide if it's double root or no roots OUTSIDE the loop 
+            // to guarantee a strict 50:50 chance regardless of rejection rates.
+            const type = Math.random() > 0.5 ? 'none' : 'double';
+            
+            do {
+                h = Math.floor(Math.random() * 9) - 4; // -4 to 4
+                if (h === 0) continue; // Vertex cannot be on the y-axis for our puzzle rules
+                
+                const a_opts = [1, -1, 0.5, -0.5, 2, -2];
+                a = a_opts[Math.floor(Math.random() * a_opts.length)]; 
+                
+                if (type === 'double') {
+                    k = 0; // Vertex is on the x-axis
+                } else {
+                    // For no real roots, 'k' and 'a' must have the same sign
+                    k = a > 0 ? Math.floor(Math.random() * 4) + 1 : -(Math.floor(Math.random() * 4) + 1);
+                }
+                
+                c = a * h * h + k;
+                b = -2 * a * h;
+            } while (h === 0 || !Number.isInteger(c) || Math.abs(c) > 8 || Math.abs(b) > 10);
+            
+            state.quiz.targetEq = {a, b, c};
+            state.quiz.targetYInt = c;
+
+            // Reset draggable points
+            state.quiz.points = [
+                { id: 'v1', type: 'vertex', x: -2, y: -2, color: '#ef4444' }, // Red vertex
+                { id: 'y1', type: 'yint', x: 0, y: 2, color: '#22c55e' }      // Green y-intercept
+            ];
+        }
+
+        renderMath(formatEquation(state.quiz.targetEq.a, state.quiz.targetEq.b, state.quiz.targetEq.c), quizTargetEqDisplay);
+        update();
+    }
+
+    function updateQuizScore() {
+        quizDisplayScore.innerText = `${state.quiz.scoreCorrect} / ${state.quiz.scoreAttempted}`;
+    }
+
+    // --- NEW FUNCTION TO SAVE SCORE TO GOOGLE SHEETS ---
+    function saveScoreToCloud() {
+        if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.trim() === "") return;
+
+        const payload = {
+            name: state.quiz.playerName,
+            mode: state.mode,
+            scoreCorrect: state.quiz.scoreCorrect,
+            scoreAttempted: state.quiz.scoreAttempted,
+            timestamp: new Date().toISOString()
+        };
+
+        // We use text/plain to bypass Google Apps Script's strict CORS preflight checks
+        fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8', 
+            },
+            body: JSON.stringify(payload)
+        }).catch(err => console.error("Error saving score:", err));
+    }
+    // ---------------------------------------------------
+
+    function getQuizUserParams() {
+        if (state.mode === 'quiz1') {
+            const r1 = state.quiz.points.find(p => p.id === 'r1').x;
+            const r2 = state.quiz.points.find(p => p.id === 'r2').x;
+            const yInt = state.quiz.points.find(p => p.type === 'yint').y;
+
+            if (r1 * r2 === 0) return null; // Avoid division by zero
+            
+            const a = yInt / (r1 * r2);
+            const b = -a * (r1 + r2);
+            const c = yInt;
+            return {a, b, c};
+            
+        } else if (state.mode === 'quiz2') {
+            const vx = state.quiz.points.find(p => p.type === 'vertex').x;
+            const vy = state.quiz.points.find(p => p.type === 'vertex').y;
+            const yInt = state.quiz.points.find(p => p.type === 'yint').y;
+
+            if (vx === 0) return null; // Vertex cannot be directly on y-intercept
+            
+            // From Vertex Form: y = a(x - h)^2 + k  --> yInt = a(0 - vx)^2 + vy
+            const a = (yInt - vy) / (vx * vx);
+            const b = -2 * a * vx;
+            const c = yInt;
+            return {a, b, c};
+        }
+        return null;
+    }
+
+    function checkAnswer() {
+        const userParams = getQuizUserParams();
+        if (!userParams) {
+            quizFeedback.innerText = state.mode === 'quiz1' 
+                ? "Invalid parabola. Roots cannot be at 0."
+                : "Invalid parabola. Vertex cannot be on the y-axis.";
+            quizFeedback.className = "text-center font-bold text-lg text-red-500 min-h-[28px]";
+            return;
+        }
+
+        state.quiz.isEvaluating = true;
+        state.quiz.scoreAttempted++;
+
+        const ta = state.quiz.targetEq.a;
+        const tb = state.quiz.targetEq.b;
+        const tc = state.quiz.targetEq.c;
+
+        const ua = userParams.a;
+        const ub = userParams.b;
+        const uc = userParams.c;
+
+        // Tolerance check
+        if (Math.abs(ta - ua) < 0.1 && Math.abs(tb - ub) < 0.1 && Math.abs(tc - uc) < 0.1) {
+            state.quiz.scoreCorrect++;
+            updateQuizScore();
+            saveScoreToCloud(); // Save to cloud automatically
+            
+            quizFeedback.innerText = "Correct! Well done. Next question in 3s...";
+            quizFeedback.className = "text-center font-bold text-lg text-green-500 min-h-[28px]";
+            checkAnswerBtn.classList.add('hidden');
+            
+            // Auto advance
+            setTimeout(() => {
+                // Ensure we haven't exited the quiz
+                if (state.mode.startsWith('quiz') && state.quiz.active) {
+                    generateQuestion();
+                }
+            }, 3000);
+        } else {
+            updateQuizScore();
+            saveScoreToCloud(); // Save to cloud automatically
+            
+            quizFeedback.innerText = "Not quite! The correct graph is shown in green.";
+            quizFeedback.className = "text-center font-bold text-lg text-red-500 min-h-[28px]";
+            state.quiz.showTargetGraph = true;
+            checkAnswerBtn.classList.add('hidden');
+            nextQuestionBtn.classList.remove('hidden');
+            update(); // Re-draw to overlay the target graph
+        }
+    }
+
+    // Mathematical Formatting
+    function formatEquation(a, b, c) {
+        let eq = "y = ";
+        
+        // Term ax^2
+        if (a !== 0) {
+            if (a === 1) eq += "x^2";
+            else if (a === -1) eq += "-x^2";
+            else eq += `${a}x^2`;
+        }
+
+        // Term bx
+        if (b !== 0) {
+            if (a !== 0) eq += (b > 0) ? " + " : " - ";
+            else if (b < 0) eq += "-";
+            
+            let absB = Math.abs(b);
+            if (absB === 1) eq += "x";
+            else eq += `${absB}x`;
+        }
+
+        // Term c
+        if (c !== 0) {
+            if (a !== 0 || b !== 0) eq += (c > 0) ? " + " : " - ";
+            else if (c < 0) eq += "-";
+            eq += Math.abs(c);
+        }
+
+        // Handle edge case where all are 0
+        if (a === 0 && b === 0 && c === 0) eq += "0";
+
+        return eq;
+    }
+
+    function round(val) {
+        return Math.round(val * 100) / 100;
+    }
+
+    function update() {
+        // Sync Readouts
+        readouts.a.innerText = state.a.toFixed(1);
+        readouts.b.innerText = state.b.toFixed(1);
+        readouts.c.innerText = state.c.toFixed(1);
+        
+        // Sync Sliders if animating
+        sliders.a.value = state.a;
+        sliders.b.value = state.b;
+        sliders.c.value = state.c;
+
+        // Calculate Properties
+        const a = state.a;
+        const b = state.b;
+        const c = state.c;
+
+        // Equation
+        renderMath(formatEquation(a, b, c), propsUI.eq);
+
+        if (a === 0) {
+            // Linear degenerate case
+            propsUI.dir.innerText = "N/A (Linear)";
+            propsUI.dir.className = "font-semibold text-gray-500";
+            renderMath("\\text{None}", propsUI.vertex);
+            renderMath("\\text{None}", propsUI.axis);
+            
+            let root = b !== 0 ? (-c / b) : null;
+            if (root !== null) {
+                renderMath(`x = ${round(root)}`, propsUI.roots);
+            } else {
+                renderMath(c === 0 ? "\\text{Infinite}" : "\\text{None}", propsUI.roots);
+            }
+        } else {
+            // Quadratic case
+            propsUI.dir.innerText = a > 0 ? "Upwards ∪" : "Downwards ∩";
+            propsUI.dir.className = a > 0 ? "font-semibold text-blue-600" : "font-semibold text-purple-600";
+            
+            // Vertex h = -b / 2a, k = f(h)
+            const h = -b / (2 * a);
+            const k = a * h * h + b * h + c;
+            renderMath(`(${round(h)}, ${round(k)})`, propsUI.vertex);
+            renderMath(`x = ${round(h)}`, propsUI.axis);
+
+            // Roots
+            const discriminant = b * b - 4 * a * c;
+            if (discriminant > 0) {
+                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                renderMath(`x = ${round(Math.min(x1, x2))}, ${round(Math.max(x1, x2))}`, propsUI.roots);
+            } else if (discriminant === 0) {
+                const x = -b / (2 * a);
+                renderMath(`x = ${round(x)} \\text{ (Double root)}`, propsUI.roots);
+            } else {
+                renderMath("\\text{No real roots}", propsUI.roots);
+            }
+        }
+
+        // y-intercept is always (0, c)
+        renderMath(`(0, ${round(c)})`, propsUI.yint);
+
+        draw();
+    }
+
+    // Coordinate Math
+    const mathToCanvasX = (x) => state.offsetX + x * state.scale;
+    const mathToCanvasY = (y) => state.offsetY - y * state.scale;
+    const canvasToMathX = (cx) => (cx - state.offsetX) / state.scale;
+    const canvasToMathY = (cy) => -(cy - state.offsetY) / state.scale;
+
+    // Drawing Functions
+    function drawGrid() {
+        ctx.clearRect(0, 0, state.width, state.height);
+        
+        ctx.beginPath();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+
+        // Vertical lines
+        const leftMathX = Math.floor(canvasToMathX(0));
+        const rightMathX = Math.ceil(canvasToMathX(state.width));
+        for (let x = leftMathX; x <= rightMathX; x++) {
+            const cx = mathToCanvasX(x);
+            ctx.moveTo(cx, 0);
+            ctx.lineTo(cx, state.height);
+        }
+
+        // Horizontal lines
+        const topMathY = Math.ceil(canvasToMathY(0));
+        const bottomMathY = Math.floor(canvasToMathY(state.height));
+        for (let y = bottomMathY; y <= topMathY; y++) {
+            const cy = mathToCanvasY(y);
+            ctx.moveTo(0, cy);
+            ctx.lineTo(state.width, cy);
+        }
+        ctx.stroke();
+
+        // Main Axes
+        ctx.beginPath();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+        
+        // X Axis
+        const yZero = mathToCanvasY(0);
+        ctx.moveTo(0, yZero);
+        ctx.lineTo(state.width, yZero);
+        
+        // Y Axis
+        const xZero = mathToCanvasX(0);
+        ctx.moveTo(xZero, 0);
+        ctx.lineTo(xZero, state.height);
+        
+        ctx.stroke();
+
+        // Ticks and Labels
+        ctx.fillStyle = '#64748b';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        for (let x = leftMathX; x <= rightMathX; x++) {
+            if (x !== 0) {
+                const cx = mathToCanvasX(x);
+                ctx.fillRect(cx - 1, yZero - 5, 2, 10);
+                ctx.fillText(x, cx, yZero + 8);
+            }
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let y = bottomMathY; y <= topMathY; y++) {
+            if (y !== 0) {
+                const cy = mathToCanvasY(y);
+                ctx.fillRect(xZero - 5, cy - 1, 10, 2);
+                ctx.fillText(y, xZero - 8, cy);
+            }
+        }
+    }
+
+    function drawParabola() {
+        const { a, b, c } = state;
+        const leftMathX = canvasToMathX(0);
+        const rightMathX = canvasToMathX(state.width);
+        const step = (rightMathX - leftMathX) / 200; // Resolution
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#3b82f6'; // Tailwind blue-500
+        ctx.lineWidth = 3;
+
+        let first = true;
+        for (let x = leftMathX; x <= rightMathX; x += step) {
+            const y = a * x * x + b * x + c;
+            const cx = mathToCanvasX(x);
+            const cy = mathToCanvasY(y);
+            
+            if (first) {
+                ctx.moveTo(cx, cy);
+                first = false;
+            } else {
+                ctx.lineTo(cx, cy);
+            }
+        }
+        ctx.stroke();
+    }
+
+    function drawPoint(mathX, mathY, color, radius) {
+        const cx = mathToCanvasX(mathX);
+        const cy = mathToCanvasY(mathY);
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
+    function drawFeatures() {
+        const { a, b, c } = state;
+
+        if (a !== 0) {
+            // Axis of Symmetry
+            const h = -b / (2 * a);
+            const cx_h = mathToCanvasX(h);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#f87171'; // red-400
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(cx_h, 0);
+            ctx.lineTo(cx_h, state.height);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset dash
+
+            // Vertex
+            const k = a * h * h + b * h + c;
+            drawPoint(h, k, '#ef4444', 6); // red-500
+
+            // Roots
+            const discriminant = b * b - 4 * a * c;
+            if (discriminant >= 0) {
+                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                drawPoint(x1, 0, '#f97316', 5); // orange-500
+                if (discriminant > 0) {
+                    drawPoint(x2, 0, '#f97316', 5); // orange-500
+                }
+            }
+        } else {
+            // Linear roots
+            if (b !== 0) {
+                drawPoint(-c/b, 0, '#f97316', 5);
+            }
+        }
+
+        // Y-intercept
+        drawPoint(0, c, '#22c55e', 5); // green-500
+    }
+
+    // Quiz Drawing
+    function drawQuizParabola() {
+        const params = getQuizUserParams();
+        if (!params) return;
+
+        const { a, b, c } = params;
+        const leftMathX = canvasToMathX(0);
+        const rightMathX = canvasToMathX(state.width);
+        const step = (rightMathX - leftMathX) / 200; 
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#6366f1'; // indigo-500
+        ctx.lineWidth = 3;
+
+        let first = true;
+        for (let x = leftMathX; x <= rightMathX; x += step) {
+            const y = a * x * x + b * x + c;
+            const cx = mathToCanvasX(x);
+            const cy = mathToCanvasY(y);
+            
+            if (first) {
+                ctx.moveTo(cx, cy);
+                first = false;
+            } else {
+                ctx.lineTo(cx, cy);
+            }
+        }
+        ctx.stroke();
+    }
+
+    function drawQuizFeatures() {
+        state.quiz.points.forEach(pt => {
+            const isHoveredOrDragged = (state.quiz.draggedPointId === pt.id);
+            const radius = isHoveredOrDragged ? 8 : 6;
+            drawPoint(pt.x, pt.y, pt.color, radius);
+        });
+    }
+
+    function drawQuizTargetGraph() {
+        if (!state.quiz.showTargetGraph) return;
+
+        const { a, b, c } = state.quiz.targetEq;
+        const leftMathX = canvasToMathX(0);
+        const rightMathX = canvasToMathX(state.width);
+        const step = (rightMathX - leftMathX) / 200; 
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#22c55e'; // green-500 dashed line
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 8]); 
+
+        let first = true;
+        for (let x = leftMathX; x <= rightMathX; x += step) {
+            const y = a * x * x + b * x + c;
+            const cx = mathToCanvasX(x);
+            const cy = mathToCanvasY(y);
+            
+            if (first) {
+                ctx.moveTo(cx, cy);
+                first = false;
+            } else {
+                ctx.lineTo(cx, cy);
+            }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset dash
+    }
+
+    function draw() {
+        drawGrid();
+        
+        if (state.mode === 'explore') {
+            drawFeatures(); 
+            drawParabola();
+            drawFeatures(); 
+        } else if (state.mode.startsWith('quiz') && state.quiz.active) {
+            drawQuizParabola();
+            drawQuizTargetGraph();
+            drawQuizFeatures();
+        }
+    }
+
+    // Animation Loop
+    function renderLoop() {
+        let changed = false;
+
+        ['a', 'b', 'c'].forEach(param => {
+            if (state.animations[param]) {
+                const speed = 0.02;
+                state.animationAngles[param] += speed;
+                
+                const min = parseFloat(sliders[param].min);
+                const max = parseFloat(sliders[param].max);
+                const range = max - min;
+                const mid = (max + min) / 2;
+                
+                // Sine wave oscillation for smooth slider sweeping
+                state[param] = mid + (range / 2) * Math.sin(state.animationAngles[param]);
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            update();
+        }
+
+        requestAnimationFrame(renderLoop);
+    }
+
+    // Interactive Tooltip and Dragging logic
+    function handleMouseDown(e) {
+        if (!state.mode.startsWith('quiz') || !state.quiz.active || state.quiz.isEvaluating) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        for (let pt of state.quiz.points) {
+            const px = mathToCanvasX(pt.x);
+            const py = mathToCanvasY(pt.y);
+            const dist = Math.hypot(mouseX - px, mouseY - py);
+            if (dist < 15) { 
+                state.quiz.draggedPointId = pt.id;
+                break;
+            }
+        }
+    }
+
+    function handleMouseUp(e) {
+        state.quiz.draggedPointId = null;
+    }
+
+    function handleMouseMove(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        if (state.mode.startsWith('quiz') && state.quiz.active) {
+            if (state.quiz.isEvaluating) {
+                canvas.style.cursor = 'default';
+                tooltip.classList.add('hidden');
+                return;
+            }
+            
+            if (state.quiz.draggedPointId) {
+                // Dragging point
+                const pt = state.quiz.points.find(p => p.id === state.quiz.draggedPointId);
+                
+                if (pt.type === 'root') {
+                    let newX = Math.round(canvasToMathX(mouseX));
+                    // Prevent roots from snapping exactly to 0 to keep parabola valid
+                    if (newX === 0) newX = canvasToMathX(mouseX) >= 0 ? 1 : -1; 
+                    pt.x = newX;
+                } else if (pt.type === 'yint') {
+                    pt.y = Math.round(canvasToMathY(mouseY));
+                } else if (pt.type === 'vertex') {
+                    let newX = Math.round(canvasToMathX(mouseX));
+                    // Prevent vertex from snapping exactly to 0, which breaks vertex+y-intercept calculation
+                    if (newX === 0) newX = canvasToMathX(mouseX) >= 0 ? 1 : -1; 
+                    pt.x = newX;
+                    pt.y = Math.round(canvasToMathY(mouseY));
+                }
+                
+                update(); 
+                tooltip.classList.add('hidden');
+                return;
+            }
+            
+            // Hover styling
+            let hovering = false;
+            for (let pt of state.quiz.points) {
+                const px = mathToCanvasX(pt.x);
+                const py = mathToCanvasY(pt.y);
+                if (Math.hypot(mouseX - px, mouseY - py) < 15) {
+                    hovering = true;
+                    break;
+                }
+            }
+            canvas.style.cursor = hovering ? 'grab' : 'crosshair';
+            tooltip.classList.add('hidden');
+            return;
+        }
+
+        // Standard Explore Mode Tooltip
+        canvas.style.cursor = 'crosshair';
+        const mathX = canvasToMathX(mouseX);
+        const mathY = state.a * mathX * mathX + state.b * mathX + state.c;
+        
+        const canvasY = mathToCanvasY(mathY);
+
+        // Only show tooltip if hovering close to the curve vertically
+        if (Math.abs(mouseY - canvasY) < 30) {
+            tooltip.classList.remove('hidden');
+            tooltip.style.left = `${mouseX}px`;
+            tooltip.style.top = `${canvasY - 10}px`;
+            renderMath(`(${round(mathX)}, ${round(mathY)})`, tooltip);
+        } else {
+            tooltip.classList.add('hidden');
+        }
+    }
+
+    // Start application after all styles and libraries are fully loaded
+    window.onload = function() {
+        init();
+    };
+
+</script>
+</body>
+</html>
