@@ -2,1262 +2,1040 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Properties of Quadratic Functions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interactive Quadratic Graph Explorer & Quiz</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Add KaTeX for LaTeX Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
     <style>
-        /* Custom scrollbar for control panel */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            touch-action: manipulation;
+        }
         input[type=range] {
-            accent-color: #3b82f6;
+            accent-color: #2563eb;
+        }
+        .canvas-container {
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans h-screen overflow-hidden flex flex-col md:flex-row">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Control Panel -->
-    <div class="w-full md:w-1/2 bg-white shadow-xl flex flex-col h-1/2 md:h-full z-10 overflow-y-auto">
-        <div class="p-6 border-b border-gray-100 bg-blue-50 relative">
-            <div class="flex flex-wrap justify-between items-start mb-2 gap-2">
-                <h1 class="text-2xl font-bold text-gray-900 w-full sm:w-auto flex-grow">Quadratic Explorer</h1>
-                <button id="toggleQuiz1Btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
-                    Quiz: Roots
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div id="logoFormula" class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center w-12 h-10 shadow"></div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Quadratic Graph Visualizer</h1>
+                    <p class="text-xs text-slate-500 font-medium">Interactive Graphing & Learning Tool</p>
+                </div>
+            </div>
+
+            <!-- Mode Switcher -->
+            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold flex-wrap">
+                <button id="btnExplore" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition-all">
+                    Explore
                 </button>
-                <button id="toggleQuiz2Btn" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
-                    Quiz: Vertex
+                <button id="toggleQuiz1Btn" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                    Quiz 1 (Standard)
                 </button>
-                <button id="exitQuizBtn" class="hidden bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-sm font-semibold transition-colors shadow-sm shrink-0">
-                    Exit Quiz
+                <button id="toggleQuiz2Btn" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                    Quiz 2 (Vertex)
                 </button>
             </div>
-            <div id="exploreHeaderInfo">
-                <div class="flex bg-blue-100/50 p-1 rounded-lg mb-4 w-full sm:w-64 mx-auto">
-                    <button id="formStdBtn" class="flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all">Standard Form</button>
-                    <button id="formVtxBtn" class="flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">Vertex Form</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Panel: Controls & Equations -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+            
+            <!-- Explore Mode Section -->
+            <div id="exploreHeaderInfo" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <!-- Form Switcher -->
+                <div class="flex bg-slate-100 p-1 rounded-xl mb-4 w-full border border-slate-200">
+                    <button id="formStdBtn" class="flex-1 bg-white shadow-sm py-2 px-3 rounded-lg text-sm font-bold text-blue-600 transition-all">Standard Form</button>
+                    <button id="formVtxBtn" class="flex-1 py-2 px-3 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all">Vertex Form</button>
                 </div>
-                <p class="text-sm text-gray-600 text-center mb-2">Form: <span id="staticFormLabel" class="text-blue-700 font-bold text-lg"></span></p>
+
+                <div class="text-center mb-2">
+                    <span class="text-xs uppercase tracking-wider text-slate-400 font-bold">General Formula</span>
+                    <div id="staticFormLabel" class="text-blue-600 font-bold text-lg mt-1"></div>
+                </div>
                 
                 <!-- Dynamic Equation Display -->
-                <div class="p-4 bg-white rounded-lg shadow-inner text-center overflow-x-auto flex flex-col gap-2">
-                    <span id="equationDisplay" class="text-2xl text-gray-800 font-semibold"></span>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center overflow-x-auto min-h-[64px] flex items-center justify-center">
+                    <span id="equationDisplay" class="text-2xl text-slate-800 font-bold"></span>
+                </div>
+            </div>
+
+            <!-- EXPLORE MODE UI CONTROLS -->
+            <div id="exploreModeUI" class="space-y-4">
+                
+                <!-- Standard Form Sliders -->
+                <div id="slidersStandard" class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderA" class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs"></span>
+                                Curvature & Direction
+                            </label>
+                            <span id="aVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">1.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderA" min="-5" max="5" step="0.1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animA" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderB" class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs"></span>
+                                Linear Coefficient
+                            </label>
+                            <span id="bVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderB" min="-10" max="10" step="0.1" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animB" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderC" class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs"></span>
+                                Y-Intercept Offset
+                            </label>
+                            <span id="cVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderC" min="-10" max="10" step="0.1" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animC" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vertex Form Sliders -->
+                <div id="slidersVertex" class="space-y-4 hidden">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderVa" class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs"></span>
+                                Curvature & Direction
+                            </label>
+                            <span id="vaVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">1.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderVa" min="-5" max="5" step="0.1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animVa" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderH" class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs"></span>
+                                Vertex Horizontal Shift
+                            </label>
+                            <span id="hVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderH" min="-10" max="10" step="0.1" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animH" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-semibold text-slate-700 text-sm flex items-center gap-2">
+                                <span id="labelSliderK" class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs"></span>
+                                Vertex Vertical Shift
+                            </label>
+                            <span id="kVal" class="font-mono text-sm bg-slate-100 px-2 py-0.5 rounded border border-slate-200 font-bold">0.0</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="sliderK" min="-10" max="10" step="0.1" value="0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <button id="animK" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors" title="Auto-animate">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculated Properties Box -->
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-2">
+                    <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wide border-b border-slate-100 pb-2">Graph Key Features</h3>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-slate-500">Opening:</span> <span id="propDirection" class="font-semibold"></span></div>
+                        <div><span class="text-slate-500">Vertex:</span> <span id="propVertex" class="font-semibold text-red-600"></span></div>
+                        <div class="col-span-2"><span class="text-slate-500">Axis of Sym:</span> <span id="propAxis" class="font-semibold text-blue-600"></span></div>
+                        <div><span class="text-slate-500">Y-Intercept:</span> <span id="propYInt" class="font-semibold text-emerald-600"></span></div>
+                        <div class="col-span-2"><span class="text-slate-500">X-Intercepts:</span> <span id="propRoots" class="font-semibold text-purple-600"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUIZ MODE UI -->
+            <div id="quizModeUI" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h2 id="quizTitle" class="font-bold text-lg text-slate-900">Quiz Challenge</h2>
+                        <button id="exitQuizBtn" class="text-xs text-slate-500 hover:text-slate-800 font-semibold underline">Exit Quiz</button>
+                    </div>
+
+                    <!-- Player Name Display -->
+                    <div class="flex items-center justify-between bg-slate-50 px-4 py-2 rounded-lg border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Student</span>
+                        <span id="quizStudentNameDisplay" class="font-bold text-blue-700">...</span>
+                    </div>
+
+                    <!-- Question Prompt Box -->
+                    <div class="p-4 bg-blue-50 border border-blue-100 rounded-xl flex flex-col items-center">
+                        <p id="quizQuestionText" class="text-sm font-semibold text-slate-800 mb-3 text-center">Prompt loading...</p>
+                        <div id="quizQuestionLatex" class="text-xl font-bold text-blue-700 bg-white px-4 py-2 rounded-lg shadow-sm"></div>
+                    </div>
+
+                    <!-- Instruction -->
+                    <p class="text-xs text-slate-500 italic text-center">Tip: Use your mouse or finger on touch screens to drag the points on the grid.</p>
+
+                    <!-- Feedback Message -->
+                    <div id="quizFeedback" class="hidden p-3 rounded-xl text-sm font-semibold text-center mt-3"></div>
+
+                    <!-- Submit / Next Buttons -->
+                    <div class="flex gap-2 mt-4">
+                        <button id="quizSubmitBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-sm">
+                            Submit Answer
+                        </button>
+                        <button id="quizNextBtn" class="hidden flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-sm">
+                            Next Question
+                        </button>
+                    </div>
+
+                    <!-- Scoreboard & GAS Sync Indicator -->
+                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-xs mt-2">
+                        <div class="font-bold text-slate-700">
+                            Score: <span id="quizScoreText" class="text-blue-600 text-sm">0 / 0 (0%)</span>
+                        </div>
+                        <div id="syncStatus" class="text-slate-400 italic">Score tracking active</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Canvas Graph Viewport -->
+        <div class="lg:col-span-7 flex flex-col">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex-grow flex flex-col relative min-h-[480px]">
+                
+                <!-- Viewport Toolbar -->
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex gap-2">
+                        <button id="zoomInBtn" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold px-2.5 transition-colors">+ Zoom</button>
+                        <button id="zoomOutBtn" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold px-2.5 transition-colors">- Zoom</button>
+                        <button id="resetViewBtn" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold px-2.5 transition-colors">Reset</button>
+                    </div>
+                    <div class="text-xs text-slate-400 font-mono hidden sm:block">
+                        Drag points on Touch Screen / Mouse
+                    </div>
+                </div>
+
+                <!-- Canvas Container -->
+                <div class="canvas-container flex-grow w-full h-full bg-white border border-slate-200 rounded-xl overflow-hidden relative cursor-crosshair">
+                    <canvas id="graphCanvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Floating Coordinates Tooltip -->
+                    <div id="tooltip" class="hidden absolute pointer-events-none bg-slate-800/90 text-white text-xs px-2.5 py-1 rounded-md shadow-lg border border-slate-700 backdrop-blur-sm z-30 font-mono"></div>
+                </div>
+
+                <!-- Canvas Legend -->
+                <div class="flex flex-wrap items-center justify-center gap-4 mt-3 text-xs font-medium text-slate-600">
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span> <span id="labelLegendVertex">Vertex</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> <span id="labelLegendYInt">Y-Intercept</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span> <span id="labelLegendXInt">X-Intercepts</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> <span id="labelLegendAxis">Axis of Symmetry</span></div>
                 </div>
             </div>
         </div>
 
-        <div class="p-6 flex-grow flex flex-col gap-6 relative">
-            
-            <!-- EXPLORE MODE UI -->
-            <div id="exploreModeUI" class="space-y-6 flex flex-col h-full">
-                <!-- Controls -->
-                <div id="slidersStandard" class="space-y-5">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">a</span>
-                                Curvature & Direction
-                            </label>
-                            <span id="aVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">1.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderA" min="-5" max="5" step="0.1" value="1" class="w-full">
-                            <button id="animA" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
+    </main>
 
-                    <!-- Slider B -->
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">b</span>
-                                Horizontal Shift
-                            </label>
-                            <span id="bVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderB" min="-10" max="10" step="0.1" value="0" class="w-full">
-                            <button id="animB" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Slider C -->
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">c</span>
-                                Vertical Shift
-                            </label>
-                            <span id="cVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderC" min="-10" max="10" step="0.1" value="0" class="w-full">
-                            <button id="animC" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="slidersVertex" class="space-y-5 hidden">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">a</span>
-                                Curvature & Direction
-                            </label>
-                            <span id="vaVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">1.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderVa" min="-5" max="5" step="0.1" value="1" class="w-full">
-                            <button id="animVa" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">h</span>
-                                Horizontal Shift
-                            </label>
-                            <span id="hVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderH" min="-10" max="10" step="0.1" value="0" class="w-full">
-                            <button id="animH" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold">k</span>
-                                Vertical Shift
-                            </label>
-                            <span id="kVal" class="font-mono text-sm bg-white px-2 py-1 rounded shadow-sm">0.0</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="sliderK" min="-10" max="10" step="0.1" value="0" class="w-full">
-                            <button id="animK" class="p-1.5 rounded-md bg-gray-200 hover:bg-gray-300 transition-colors tooltip" title="Auto-animate">
-                                <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Properties Readout -->
-                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mt-4">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Mathematical Properties</h3>
-                    
-                    <ul class="space-y-3 text-sm">
-                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
-                            <span class="text-gray-600">Opens:</span>
-                            <span id="propDirection" class="font-semibold text-blue-600">Upwards</span>
-                        </li>
-                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
-                            <span class="flex items-center gap-1 text-gray-600">
-                                <div class="w-2 h-2 rounded-full bg-red-500"></div> Vertex <span id="labelVertex"></span>:
-                            </span>
-                            <span id="propVertex" class="font-semibold text-red-600 text-base"></span>
-                        </li>
-                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
-                            <span class="flex items-center gap-1 text-gray-600">
-                                <div class="w-3 h-0 border-t-2 border-dashed border-red-400"></div> Axis of Symmetry:
-                            </span>
-                            <span id="propAxis" class="font-semibold text-red-500 text-base"></span>
-                        </li>
-                        <li class="flex justify-between items-center border-b border-gray-100 pb-2">
-                            <span class="flex items-center gap-1 text-gray-600">
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div> <span id="labelYInt"></span>-intercept:
-                            </span>
-                            <span id="propYInt" class="font-semibold text-green-600 text-base"></span>
-                        </li>
-                        <li class="flex justify-between items-center">
-                            <span class="flex items-center gap-1 text-gray-600">
-                                <div class="w-2 h-2 rounded-full bg-orange-500"></div> Roots (<span id="labelXInt"></span>-intercepts):
-                            </span>
-                            <span id="propRoots" class="font-semibold text-orange-600 text-base"></span>
-                        </li>
-                    </ul>
-                </div>
+    <!-- Name Input Modal -->
+    <div id="nameModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 space-y-4 border border-slate-200">
+            <h3 class="text-xl font-extrabold text-slate-900">Welcome to the Quiz</h3>
+            <p class="text-sm text-slate-500 font-medium">Please enter your name to track your score.</p>
+            <input type="text" id="modalNameInput" placeholder="Your Name" class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold text-slate-800">
+            <div class="flex gap-3 pt-2">
+                <button id="modalCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition-all shadow-sm">Cancel</button>
+                <button id="modalStartBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-sm">Start Quiz</button>
             </div>
-
-            <!-- QUIZ MODE UI (Hidden by default) -->
-            <div id="quizModeUI" class="hidden flex flex-col gap-4 h-full">
-                <div id="quizSetup" class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 shadow-sm flex flex-col gap-4">
-                    <h2 class="text-lg font-bold text-indigo-900">Welcome to Quiz Mode!</h2>
-                    <p class="text-sm text-indigo-700">Test your skills by matching the graph to the equation.</p>
-                    <input type="text" id="quizPlayerNameInput" placeholder="Enter your name" class="px-4 py-2 rounded border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button id="startQuizBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors shadow">Start Playing</button>
-                </div>
-
-                <div id="quizActive" class="hidden flex flex-col gap-4 h-full">
-                    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
-                        <span class="font-bold text-gray-700">Player: <span id="quizDisplayPlayer" class="text-indigo-600"></span></span>
-                        <span class="font-bold text-gray-700">Score: <span id="quizDisplayScore" class="text-green-600 text-lg">0 / 0</span></span>
-                    </div>
-                    
-                    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
-                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Target Equation</h3>
-                        <div class="p-4 bg-gray-50 rounded-lg shadow-inner mb-4 overflow-x-auto">
-                            <span id="quizTargetEqDisplay" class="text-2xl text-gray-800 font-semibold"></span>
-                        </div>
-                        <p id="quizInstructions" class="text-sm text-gray-600 text-left bg-blue-50 p-3 rounded border border-blue-100">
-                            <!-- Populated by JS based on Mode -->
-                        </p>
-                    </div>
-                    
-                    <div class="mt-auto pt-4 flex flex-col gap-2">
-                        <p id="quizFeedback" class="text-center font-bold text-lg min-h-[28px] transition-colors"></p>
-                        
-                        <div id="quizHintContainer" class="hidden flex flex-col gap-2">
-                            <button id="hintBtn" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-2 px-4 rounded-xl transition-colors shadow-sm border border-purple-200 text-sm">Need a Hint? (Show Vertex Form)</button>
-                            <p id="quizHintDisplay" class="hidden text-center text-xl text-indigo-700 font-bold bg-indigo-50 p-3 rounded-xl border border-indigo-100 overflow-x-auto"></p>
-                        </div>
-
-                        <button id="checkAnswerBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-green-200">Check Answer</button>
-                        <button id="nextQuestionBtn" class="hidden w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow shadow-blue-200">Next Question</button>
-                    </div>
-                </div>
-            </div>
-            
         </div>
     </div>
 
-    <!-- Graph Area -->
-    <div class="w-full md:w-1/2 h-1/2 md:h-full relative bg-white" id="canvasContainer">
-        <!-- Interactive Graph Canvas -->
-        <canvas id="graphCanvas" class="w-full h-full cursor-crosshair"></canvas>
-        
-        <!-- Legend Overlay -->
-        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md border border-gray-100 text-xs text-gray-600 pointer-events-none">
-            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-1 bg-blue-500 rounded"></div> Parabola Function</div>
-            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 rounded-full bg-red-500 ml-0.5"></div> Vertex</div>
-            <div class="flex items-center gap-2 mb-1"><div class="w-3 h-0 border-t-2 border-dashed border-red-400"></div> Axis of Symmetry</div>
-            <div class="flex items-center gap-2 mb-1"><div class="w-2 h-2 rounded-full bg-green-500 ml-0.5"></div> y-intercept</div>
-            <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-500 ml-0.5"></div> x-intercepts (Roots)</div>
-        </div>
-        
-        <!-- Floating coordinate tooltip -->
-        <div id="tooltip" class="absolute hidden bg-gray-900 text-white text-sm font-bold px-3 py-2 rounded pointer-events-none transform -translate-x-1/2 -translate-y-[150%] transition-opacity shadow-lg">
-            (0, 0)
-        </div>
-    </div>
+    <script>
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEffCI-yMgAIwcvvu73kZC2to4WYvueGwVDAEFRW_itawbBWX2sQw4wcbmULerm4E/exec";
 
-<script>
-    // --- GOOGLE APPS SCRIPT SETTINGS ---
-    // PASTE YOUR PUBLISHED WEB APP URL HERE:
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEffCI-yMgAIwcvvu73kZC2to4WYvueGwVDAEFRW_itawbBWX2sQw4wcbmULerm4E/exec"; 
-    
-    // App State
-    let state = {
-        a: 1.0,
-        b: 0.0,
-        c: 0.0,
-        va: 1.0,
-        h: 0.0,
-        k: 0.0,
-        effA: 1.0,
-        effB: 0.0,
-        effC: 0.0,
-        animations: { a: false, b: false, c: false, va: false, h: false, k: false },
-        animationAngles: { a: 0, b: 0, c: 0, va: 0, h: 0, k: 0 },
-        scale: 30, // pixels per math unit
-        offsetX: 0,
-        offsetY: 0,
-        width: 0,
-        height: 0,
-        
-        // New Quiz State
-        mode: 'explore', // 'explore', 'quiz1', or 'quiz2'
-        formMode: 'standard', // 'standard' or 'vertex'
-        quiz: {
-            playerName: '',
-            scoreCorrect: 0,
-            scoreAttempted: 0,
-            active: false,
-            isEvaluating: false,
-            showTargetGraph: false,
-            targetEq: { a: 1, b: 0, c: 0 },
-            targetRoots: [0, 0],
-            targetYInt: 0,
-            points: [],
-            draggedPointId: null
-        }
-    };
-
-    // DOM Elements
-    const canvas = document.getElementById('graphCanvas');
-    const ctx = canvas.getContext('2d');
-    const container = document.getElementById('canvasContainer');
-    const tooltip = document.getElementById('tooltip');
-
-    const sliders = {
-        a: document.getElementById('sliderA'),
-        b: document.getElementById('sliderB'),
-        c: document.getElementById('sliderC'),
-        va: document.getElementById('sliderVa'),
-        h: document.getElementById('sliderH'),
-        k: document.getElementById('sliderK')
-    };
-    
-    const readouts = {
-        a: document.getElementById('aVal'),
-        b: document.getElementById('bVal'),
-        c: document.getElementById('cVal'),
-        va: document.getElementById('vaVal'),
-        h: document.getElementById('hVal'),
-        k: document.getElementById('kVal')
-    };
-
-    const animBtns = {
-        a: document.getElementById('animA'),
-        b: document.getElementById('animB'),
-        c: document.getElementById('animC'),
-        va: document.getElementById('animVa'),
-        h: document.getElementById('animH'),
-        k: document.getElementById('animK')
-    };
-
-    const propsUI = {
-        eq: document.getElementById('equationDisplay'),
-        dir: document.getElementById('propDirection'),
-        vertex: document.getElementById('propVertex'),
-        axis: document.getElementById('propAxis'),
-        yint: document.getElementById('propYInt'),
-        roots: document.getElementById('propRoots')
-    };
-
-    // New DOM Elements for Quiz
-    const exploreModeUI = document.getElementById('exploreModeUI');
-    const exploreHeaderInfo = document.getElementById('exploreHeaderInfo');
-    const staticFormLabel = document.getElementById('staticFormLabel');
-    const formStdBtn = document.getElementById('formStdBtn');
-    const formVtxBtn = document.getElementById('formVtxBtn');
-    const slidersStandard = document.getElementById('slidersStandard');
-    const slidersVertex = document.getElementById('slidersVertex');
-    const quizModeUI = document.getElementById('quizModeUI');
-    const toggleQuiz1Btn = document.getElementById('toggleQuiz1Btn');
-    const toggleQuiz2Btn = document.getElementById('toggleQuiz2Btn');
-    const exitQuizBtn = document.getElementById('exitQuizBtn');
-    
-    const quizSetup = document.getElementById('quizSetup');
-    const quizActive = document.getElementById('quizActive');
-    const quizPlayerNameInput = document.getElementById('quizPlayerNameInput');
-    const startQuizBtn = document.getElementById('startQuizBtn');
-    const quizDisplayPlayer = document.getElementById('quizDisplayPlayer');
-    const quizDisplayScore = document.getElementById('quizDisplayScore');
-    const quizTargetEqDisplay = document.getElementById('quizTargetEqDisplay');
-    const quizInstructions = document.getElementById('quizInstructions');
-    const checkAnswerBtn = document.getElementById('checkAnswerBtn');
-    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
-    const quizFeedback = document.getElementById('quizFeedback');
-    
-    const hintBtn = document.getElementById('hintBtn');
-    const quizHintDisplay = document.getElementById('quizHintDisplay');
-    const quizHintContainer = document.getElementById('quizHintContainer');
-
-    // Helper for KaTeX rendering
-    function renderMath(str, el) {
-        if (window.katex && el) {
-            katex.render(str, el, { throwOnError: false, displayMode: false });
-        } else if (el) {
-            el.innerText = str;
-        }
-    }
-
-    // Initialize
-    function init() {
-        // Render static math labels
-        renderMath("(h, k)", document.getElementById('labelVertex'));
-        renderMath("y", document.getElementById('labelYInt'));
-        renderMath("x", document.getElementById('labelXInt'));
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        // Setup slider listeners
-        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
-            sliders[param].addEventListener('input', (e) => {
-                state[param] = parseFloat(e.target.value);
-                state.animations[param] = false; // Stop animation if manually adjusted
-                updateBtnStyles();
-                update();
-            });
-
-            animBtns[param].addEventListener('click', () => {
-                state.animations[param] = !state.animations[param];
-                // Sync animation angle to current slider value to prevent jumping
-                if (state.animations[param]) {
-                    let range = parseFloat(sliders[param].max) - parseFloat(sliders[param].min);
-                    let mid = (parseFloat(sliders[param].max) + parseFloat(sliders[param].min)) / 2;
-                    let norm = (state[param] - mid) / (range / 2);
-                    state.animationAngles[param] = Math.asin(Math.max(-1, Math.min(1, norm)));
-                }
-                updateBtnStyles();
-            });
-        });
-
-        // Form Mode Listeners
-        formStdBtn.addEventListener('click', () => toggleFormMode('standard'));
-        formVtxBtn.addEventListener('click', () => toggleFormMode('vertex'));
-
-        // Quiz Event Listeners
-        toggleQuiz1Btn.addEventListener('click', () => toggleMode('quiz1'));
-        toggleQuiz2Btn.addEventListener('click', () => toggleMode('quiz2'));
-        exitQuizBtn.addEventListener('click', () => toggleMode('explore'));
-        
-        startQuizBtn.addEventListener('click', startQuiz);
-        checkAnswerBtn.addEventListener('click', checkAnswer);
-        nextQuestionBtn.addEventListener('click', generateQuestion);
-
-        hintBtn.addEventListener('click', () => {
-            hintBtn.classList.add('hidden');
-            quizHintDisplay.classList.remove('hidden');
-            const ta = state.quiz.targetEq.a;
-            const tb = state.quiz.targetEq.b;
-            const tc = state.quiz.targetEq.c;
-            const th = -tb / (2 * ta);
-            const tk = ta * th * th + tb * th + tc;
-            renderMath(formatVertexEquation(ta, th, tk), quizHintDisplay);
-        });
-
-        // Mouse interaction for tooltip and dragging
-        canvas.addEventListener('mousemove', handleMouseMove);
-        canvas.addEventListener('mousedown', handleMouseDown);
-        canvas.addEventListener('mouseup', handleMouseUp);
-        canvas.addEventListener('mouseleave', () => {
-            tooltip.classList.add('hidden');
-            state.quiz.draggedPointId = null;
-        });
-
-        // Start render loop
-        toggleFormMode(state.formMode);
-        requestAnimationFrame(renderLoop);
-        update();
-    }
-
-    function resizeCanvas() {
-        const rect = container.getBoundingClientRect();
-        // Setup high-DPI display
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${rect.height}px`;
-        
-        state.width = rect.width;
-        state.height = rect.height;
-        state.offsetX = state.width / 2;
-        state.offsetY = state.height / 2;
-        
-        draw();
-    }
-
-    function updateBtnStyles() {
-        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
-            if (state.animations[param]) {
-                animBtns[param].classList.add('bg-blue-500', 'text-white');
-                animBtns[param].classList.remove('bg-gray-200', 'text-gray-700');
-                animBtns[param].innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-            } else {
-                animBtns[param].classList.remove('bg-blue-500', 'text-white');
-                animBtns[param].classList.add('bg-gray-200', 'text-gray-700');
-                animBtns[param].innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        // Application State
+        let state = {
+            formMode: 'standard', // 'standard' or 'vertex'
+            mode: 'explore',      // 'explore', 'quiz1', or 'quiz2'
+            a: 1.0, b: 0.0, c: 0.0,
+            va: 1.0, h: 0.0, k: 0.0,
+            effA: 1.0, effB: 0.0, effC: 0.0,
+            animations: { a: false, b: false, c: false, va: false, h: false, k: false },
+            animationAngles: { a: 0, b: 0, c: 0, va: 0, h: 0, k: 0 },
+            scale: 35, 
+            offsetX: 0,
+            offsetY: 0,
+            width: 0,
+            height: 0,
+            quiz: {
+                playerName: '',
+                scoreCorrect: 0,
+                scoreAttempted: 0,
+                targetA: 1, targetB: 0, targetC: 0,
+                controlPoints: [],
+                draggedPointId: null,
+                showAnswer: false
             }
-        });
-    }
-
-    // Quiz Logic Functions
-    function toggleFormMode(mode) {
-        state.formMode = mode;
-        if (mode === 'standard') {
-            formStdBtn.className = "flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all";
-            formVtxBtn.className = "flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
-            slidersStandard.classList.remove('hidden');
-            slidersVertex.classList.add('hidden');
-            renderMath("y = ax^2 + bx + c", staticFormLabel);
-        } else {
-            formVtxBtn.className = "flex-1 bg-white shadow-sm py-1.5 px-3 rounded-md text-sm font-bold text-blue-700 transition-all";
-            formStdBtn.className = "flex-1 py-1.5 px-3 rounded-md text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
-            slidersStandard.classList.add('hidden');
-            slidersVertex.classList.remove('hidden');
-            renderMath("y = a(x-h)^2 + k", staticFormLabel);
-        }
-        update();
-    }
-
-    function toggleMode(modeName) {
-        if (modeName === 'explore') {
-            state.mode = 'explore';
-            state.quiz.active = false;
-            exploreModeUI.classList.remove('hidden');
-            exploreHeaderInfo.classList.remove('hidden');
-            quizModeUI.classList.add('hidden');
-            
-            toggleQuiz1Btn.classList.remove('hidden');
-            toggleQuiz2Btn.classList.remove('hidden');
-            exitQuizBtn.classList.add('hidden');
-            
-            // Re-sync form toggle
-            toggleFormMode(state.formMode);
-        } else {
-            state.mode = modeName;
-            exploreModeUI.classList.add('hidden');
-            exploreHeaderInfo.classList.add('hidden');
-            quizModeUI.classList.remove('hidden');
-            
-            toggleQuiz1Btn.classList.add('hidden');
-            toggleQuiz2Btn.classList.add('hidden');
-            exitQuizBtn.classList.remove('hidden');
-            
-            // Ensure Setup is shown
-            quizSetup.classList.remove('hidden');
-            quizActive.classList.add('hidden');
-            state.quiz.active = false;
-
-            if (modeName === 'quiz1') {
-                quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-orange-600 font-bold">two orange x-intercepts</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
-                quizHintContainer.classList.add('hidden');
-            } else if (modeName === 'quiz2') {
-                quizInstructions.innerHTML = `<strong>Instructions:</strong> Drag the <span class="text-red-600 font-bold">red vertex</span> and the <span class="text-green-600 font-bold">green y-intercept</span> on the graph to perfectly match the target equation above.`;
-                quizHintContainer.classList.remove('hidden');
-            }
-        }
-        update();
-    }
-
-    function startQuiz() {
-        const name = quizPlayerNameInput.value.trim();
-        if (!name) {
-            alert("Please enter your name to start.");
-            return;
-        }
-        state.quiz.playerName = name;
-        state.quiz.scoreCorrect = 0;
-        state.quiz.scoreAttempted = 0;
-        state.quiz.active = true;
-        
-        quizSetup.classList.add('hidden');
-        quizActive.classList.remove('hidden');
-        
-        quizDisplayPlayer.innerText = name;
-        updateQuizScore();
-        
-        generateQuestion();
-    }
-
-    function generateQuestion() {
-        state.quiz.isEvaluating = false;
-        state.quiz.showTargetGraph = false;
-        quizFeedback.innerText = '';
-        checkAnswerBtn.classList.remove('hidden');
-        nextQuestionBtn.classList.add('hidden');
-
-        // Reset Hint UI for new question
-        quizHintDisplay.classList.add('hidden');
-        if (state.mode === 'quiz2') {
-            hintBtn.classList.remove('hidden');
-            quizHintContainer.classList.remove('hidden');
-        } else {
-            quizHintContainer.classList.add('hidden');
-        }
-
-        if (state.mode === 'quiz1') {
-            let r1, r2, a, b, c;
-            do {
-                r1 = Math.floor(Math.random() * 11) - 5; // -5 to 5
-                r2 = Math.floor(Math.random() * 11) - 5;
-                const a_opts = [1, -1, 0.5, -0.5, 2, -2];
-                a = a_opts[Math.floor(Math.random() * a_opts.length)]; 
-                c = a * r1 * r2;
-                b = -a * (r1 + r2);
-            } while (
-                r1 === r2 || r1 === 0 || r2 === 0 || !Number.isInteger(c) || Math.abs(c) > 8
-            ); 
-            
-            state.quiz.targetEq = {a, b, c};
-            state.quiz.targetRoots = [r1, r2].sort((x,y)=>x-y);
-            state.quiz.targetYInt = c;
-
-            // Reset draggable points
-            state.quiz.points = [
-                { id: 'r1', type: 'root', x: -3, y: 0, color: '#f97316' },
-                { id: 'r2', type: 'root', x: 3, y: 0, color: '#f97316' },
-                { id: 'y1', type: 'yint', x: 0, y: -2, color: '#22c55e' }
-            ];
-            
-        } else if (state.mode === 'quiz2') {
-            let h, k, a, b, c;
-            
-            // Randomly decide if it's double root or no roots OUTSIDE the loop 
-            // to guarantee a strict 50:50 chance regardless of rejection rates.
-            const type = Math.random() > 0.5 ? 'none' : 'double';
-            
-            do {
-                h = Math.floor(Math.random() * 9) - 4; // -4 to 4
-                if (h === 0) continue; // Vertex cannot be on the y-axis for our puzzle rules
-                
-                const a_opts = [1, -1, 0.5, -0.5, 2, -2];
-                a = a_opts[Math.floor(Math.random() * a_opts.length)]; 
-                
-                if (type === 'double') {
-                    k = 0; // Vertex is on the x-axis
-                } else {
-                    // For no real roots, 'k' and 'a' must have the same sign
-                    k = a > 0 ? Math.floor(Math.random() * 4) + 1 : -(Math.floor(Math.random() * 4) + 1);
-                }
-                
-                c = a * h * h + k;
-                b = -2 * a * h;
-            } while (h === 0 || !Number.isInteger(c) || Math.abs(c) > 8 || Math.abs(b) > 10);
-            
-            state.quiz.targetEq = {a, b, c};
-            state.quiz.targetYInt = c;
-
-            // Reset draggable points
-            state.quiz.points = [
-                { id: 'v1', type: 'vertex', x: -2, y: -2, color: '#ef4444' }, // Red vertex
-                { id: 'y1', type: 'yint', x: 0, y: 2, color: '#22c55e' }      // Green y-intercept
-            ];
-        }
-
-        renderMath(formatEquation(state.quiz.targetEq.a, state.quiz.targetEq.b, state.quiz.targetEq.c), quizTargetEqDisplay);
-        update();
-    }
-
-    function updateQuizScore() {
-        quizDisplayScore.innerText = `${state.quiz.scoreCorrect} / ${state.quiz.scoreAttempted}`;
-    }
-
-    // --- NEW FUNCTION TO SAVE SCORE TO GOOGLE SHEETS ---
-    function saveScoreToCloud() {
-        if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.trim() === "") return;
-
-        const payload = {
-            name: state.quiz.playerName,
-            mode: state.mode,
-            scoreCorrect: state.quiz.scoreCorrect,
-            scoreAttempted: state.quiz.scoreAttempted,
-            timestamp: new Date().toISOString()
         };
 
-        // We use text/plain to bypass Google Apps Script's strict CORS preflight checks
-        fetch(GAS_WEB_APP_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8', 
-            },
-            body: JSON.stringify(payload)
-        }).catch(err => console.error("Error saving score:", err));
-    }
-    // ---------------------------------------------------
+        let canvas, ctx, tooltip;
+        let autoNextTimeout = null;
 
-    function getQuizUserParams() {
-        if (state.mode === 'quiz1') {
-            const r1 = state.quiz.points.find(p => p.id === 'r1').x;
-            const r2 = state.quiz.points.find(p => p.id === 'r2').x;
-            const yInt = state.quiz.points.find(p => p.type === 'yint').y;
-
-            if (r1 * r2 === 0) return null; // Avoid division by zero
-            
-            const a = yInt / (r1 * r2);
-            const b = -a * (r1 + r2);
-            const c = yInt;
-            return {a, b, c};
-            
-        } else if (state.mode === 'quiz2') {
-            const vx = state.quiz.points.find(p => p.type === 'vertex').x;
-            const vy = state.quiz.points.find(p => p.type === 'vertex').y;
-            const yInt = state.quiz.points.find(p => p.type === 'yint').y;
-
-            if (vx === 0) return null; // Vertex cannot be directly on y-intercept
-            
-            // From Vertex Form: y = a(x - h)^2 + k  --> yInt = a(0 - vx)^2 + vy
-            const a = (yInt - vy) / (vx * vx);
-            const b = -2 * a * vx;
-            const c = yInt;
-            return {a, b, c};
-        }
-        return null;
-    }
-
-    function checkAnswer() {
-        const userParams = getQuizUserParams();
-        if (!userParams) {
-            quizFeedback.innerText = state.mode === 'quiz1' 
-                ? "Invalid parabola. Roots cannot be at 0."
-                : "Invalid parabola. Vertex cannot be on the y-axis.";
-            quizFeedback.className = "text-center font-bold text-lg text-red-500 min-h-[28px]";
-            return;
-        }
-
-        state.quiz.isEvaluating = true;
-        state.quiz.scoreAttempted++;
-
-        const ta = state.quiz.targetEq.a;
-        const tb = state.quiz.targetEq.b;
-        const tc = state.quiz.targetEq.c;
-
-        const ua = userParams.a;
-        const ub = userParams.b;
-        const uc = userParams.c;
-
-        // Tolerance check
-        if (Math.abs(ta - ua) < 0.1 && Math.abs(tb - ub) < 0.1 && Math.abs(tc - uc) < 0.1) {
-            state.quiz.scoreCorrect++;
-            updateQuizScore();
-            saveScoreToCloud(); // Save to cloud automatically
-            
-            quizFeedback.innerText = "Correct! Well done. Next question in 3s...";
-            quizFeedback.className = "text-center font-bold text-lg text-green-500 min-h-[28px]";
-            checkAnswerBtn.classList.add('hidden');
-            
-            // Auto advance
-            setTimeout(() => {
-                // Ensure we haven't exited the quiz
-                if (state.mode.startsWith('quiz') && state.quiz.active) {
-                    generateQuestion();
-                }
-            }, 3000);
-        } else {
-            updateQuizScore();
-            saveScoreToCloud(); // Save to cloud automatically
-            
-            quizFeedback.innerText = "Not quite! The correct graph is shown in green.";
-            quizFeedback.className = "text-center font-bold text-lg text-red-500 min-h-[28px]";
-            state.quiz.showTargetGraph = true;
-            checkAnswerBtn.classList.add('hidden');
-            nextQuestionBtn.classList.remove('hidden');
-            update(); // Re-draw to overlay the target graph
-        }
-    }
-
-    // Mathematical Formatting
-    function formatEquation(a, b, c) {
-        let eq = "y = ";
-        
-        // Term ax^2
-        if (a !== 0) {
-            if (a === 1) eq += "x^2";
-            else if (a === -1) eq += "-x^2";
-            else eq += `${a}x^2`;
-        }
-
-        // Term bx
-        if (b !== 0) {
-            if (a !== 0) eq += (b > 0) ? " + " : " - ";
-            else if (b < 0) eq += "-";
-            
-            let absB = Math.abs(b);
-            if (absB === 1) eq += "x";
-            else eq += `${absB}x`;
-        }
-
-        // Term c
-        if (c !== 0) {
-            if (a !== 0 || b !== 0) eq += (c > 0) ? " + " : " - ";
-            else if (c < 0) eq += "-";
-            eq += Math.abs(c);
-        }
-
-        // Handle edge case where all are 0
-        if (a === 0 && b === 0 && c === 0) eq += "0";
-
-        return eq;
-    }
-
-    function formatVertexEquation(a, h, k) {
-        if (a === 0) return "\\text{N/A}";
-        let eq = "y = ";
-        
-        // Term a
-        if (a === -1) eq += "-";
-        else if (a !== 1) eq += `${round(a)}`;
-        
-        // Term (x - h)^2
-        if (round(h) === 0) {
-            eq += "x^2";
-        } else {
-            let hSign = h > 0 ? "-" : "+";
-            let absH = Math.abs(round(h));
-            eq += `(x ${hSign} ${absH})^2`;
-        }
-        
-        // Term k
-        let roundedK = round(k);
-        if (roundedK > 0) {
-            eq += ` + ${roundedK}`;
-        } else if (roundedK < 0) {
-            eq += ` - ${Math.abs(roundedK)}`;
-        }
-        
-        return eq;
-    }
-
-    function round(val) {
-        return Math.round(val * 100) / 100;
-    }
-
-    function update() {
-        // Sync Readouts
-        readouts.a.innerText = state.a.toFixed(1);
-        readouts.b.innerText = state.b.toFixed(1);
-        readouts.c.innerText = state.c.toFixed(1);
-        readouts.va.innerText = state.va.toFixed(1);
-        readouts.h.innerText = state.h.toFixed(1);
-        readouts.k.innerText = state.k.toFixed(1);
-        
-        // Sync Sliders if animating
-        sliders.a.value = state.a;
-        sliders.b.value = state.b;
-        sliders.c.value = state.c;
-        sliders.va.value = state.va;
-        sliders.h.value = state.h;
-        sliders.k.value = state.k;
-
-        // Calculate Properties
-        let a, b, c;
-        if (state.formMode === 'standard') {
-            a = state.a;
-            b = state.b;
-            c = state.c;
-            renderMath(formatEquation(a, b, c), propsUI.eq);
-        } else {
-            a = state.va;
-            const h = state.h;
-            const k = state.k;
-            b = -2 * a * h;
-            c = a * h * h + k;
-            renderMath(formatVertexEquation(a, h, k), propsUI.eq);
-        }
-
-        state.effA = a;
-        state.effB = b;
-        state.effC = c;
-
-        if (a === 0) {
-            // Linear degenerate case
-            propsUI.dir.innerText = "N/A (Linear)";
-            propsUI.dir.className = "font-semibold text-gray-500";
-            renderMath("\\text{None}", propsUI.vertex);
-            renderMath("\\text{None}", propsUI.axis);
-            
-            let root = b !== 0 ? (-c / b) : null;
-            if (root !== null) {
-                renderMath(`x = ${round(root)}`, propsUI.roots);
-            } else {
-                renderMath(c === 0 ? "\\text{Infinite}" : "\\text{None}", propsUI.roots);
-            }
-        } else {
-            // Quadratic case
-            propsUI.dir.innerText = a > 0 ? "Upwards ∪" : "Downwards ∩";
-            propsUI.dir.className = a > 0 ? "font-semibold text-blue-600" : "font-semibold text-purple-600";
-            
-            // Vertex h = -b / 2a, k = f(h)
-            const h = -b / (2 * a);
-            const k = a * h * h + b * h + c;
-            renderMath(`(${round(h)}, ${round(k)})`, propsUI.vertex);
-            renderMath(`x = ${round(h)}`, propsUI.axis);
-
-            // Roots
-            const discriminant = b * b - 4 * a * c;
-            if (discriminant > 0) {
-                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-                renderMath(`x = ${round(Math.min(x1, x2))}, ${round(Math.max(x1, x2))}`, propsUI.roots);
-            } else if (discriminant === 0) {
-                const x = -b / (2 * a);
-                renderMath(`x = ${round(x)} \\text{ (Double root)}`, propsUI.roots);
-            } else {
-                renderMath("\\text{No real roots}", propsUI.roots);
+        function renderMath(latex, el, displayMode = false) {
+            if (!el) return;
+            try {
+                katex.render(latex, el, { throwOnError: false, displayMode: displayMode });
+            } catch (e) {
+                el.textContent = latex;
             }
         }
 
-        // y-intercept is always (0, c)
-        renderMath(`(0, ${round(c)})`, propsUI.yint);
-
-        draw();
-    }
-
-    // Coordinate Math
-    const mathToCanvasX = (x) => state.offsetX + x * state.scale;
-    const mathToCanvasY = (y) => state.offsetY - y * state.scale;
-    const canvasToMathX = (cx) => (cx - state.offsetX) / state.scale;
-    const canvasToMathY = (cy) => -(cy - state.offsetY) / state.scale;
-
-    // Drawing Functions
-    function drawGrid() {
-        ctx.clearRect(0, 0, state.width, state.height);
-        
-        ctx.beginPath();
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1;
-
-        // Vertical lines
-        const leftMathX = Math.floor(canvasToMathX(0));
-        const rightMathX = Math.ceil(canvasToMathX(state.width));
-        for (let x = leftMathX; x <= rightMathX; x++) {
-            const cx = mathToCanvasX(x);
-            ctx.moveTo(cx, 0);
-            ctx.lineTo(cx, state.height);
+        function formatEquation(a, b, c) {
+            if (a === 0 && b === 0 && c === 0) return "0";
+            let parts = [];
+            
+            if (a !== 0) {
+                if (a === 1) parts.push("x^2");
+                else if (a === -1) parts.push("-x^2");
+                else parts.push(`${a}x^2`);
+            }
+            
+            if (b !== 0) {
+                let sign = b > 0 ? (parts.length > 0 ? "+" : "") : "-";
+                let val = Math.abs(b);
+                let bStr = val === 1 ? "x" : `${val}x`;
+                parts.push(sign + bStr);
+            }
+            
+            if (c !== 0 || parts.length === 0) {
+                let sign = c > 0 ? (parts.length > 0 ? "+" : "") : "-";
+                let val = Math.abs(c);
+                if (parts.length === 0) parts.push(`${c}`);
+                else parts.push(sign + val);
+            }
+            
+            return parts.join("");
         }
 
-        // Horizontal lines
-        const topMathY = Math.ceil(canvasToMathY(0));
-        const bottomMathY = Math.floor(canvasToMathY(state.height));
-        for (let y = bottomMathY; y <= topMathY; y++) {
-            const cy = mathToCanvasY(y);
-            ctx.moveTo(0, cy);
-            ctx.lineTo(state.width, cy);
+        function formatVertexEquation(a, h, k) {
+            if (a === 0) return `${k}`;
+            let aStr = "";
+            if (a === -1) aStr = "-";
+            else if (a !== 1) aStr = `${a}`;
+            
+            let hStr = "";
+            if (h === 0) hStr = "x^2";
+            else if (h > 0) hStr = `(x - ${h})^2`;
+            else hStr = `(x + ${Math.abs(h)})^2`;
+            
+            let kStr = "";
+            if (k > 0) kStr = `+${k}`;
+            else if (k < 0) kStr = `-${Math.abs(k)}`;
+            
+            return aStr + hStr + kStr;
         }
-        ctx.stroke();
 
-        // Main Axes
-        ctx.beginPath();
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 2;
-        
-        // X Axis
-        const yZero = mathToCanvasY(0);
-        ctx.moveTo(0, yZero);
-        ctx.lineTo(state.width, yZero);
-        
-        // Y Axis
-        const xZero = mathToCanvasX(0);
-        ctx.moveTo(xZero, 0);
-        ctx.lineTo(xZero, state.height);
-        
-        ctx.stroke();
+        function round(val, places = 2) {
+            const mult = Math.pow(10, places);
+            return Math.round(val * mult) / mult;
+        }
 
-        // Ticks and Labels
-        ctx.fillStyle = '#64748b';
-        ctx.font = '14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'top';
+        function mathToCanvasX(x) {
+            return state.width / 2 + state.offsetX + x * state.scale;
+        }
 
-        for (let x = leftMathX; x <= rightMathX; x++) {
-            if (x !== 0) {
+        function mathToCanvasY(y) {
+            return state.height / 2 + state.offsetY - y * state.scale;
+        }
+
+        function canvasToMathX(cx) {
+            return (cx - state.width / 2 - state.offsetX) / state.scale;
+        }
+
+        function canvasToMathY(cy) {
+            return (state.height / 2 + state.offsetY - cy) / state.scale;
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            state.width = canvas.width;
+            state.height = canvas.height;
+            draw();
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, state.width, state.height);
+            ctx.fillStyle = "#f8fafc";
+            ctx.fillRect(0, 0, state.width, state.height);
+
+            const originX = state.width / 2 + state.offsetX;
+            const originY = state.height / 2 + state.offsetY;
+
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 1;
+
+            const minX = Math.floor(-originX / state.scale);
+            const maxX = Math.ceil((state.width - originX) / state.scale);
+            const minY = Math.floor(-(state.height - originY) / state.scale);
+            const maxY = Math.ceil(originY / state.scale);
+
+            for (let x = minX; x <= maxX; x++) {
                 const cx = mathToCanvasX(x);
-                ctx.fillRect(cx - 1, yZero - 5, 2, 10);
-                ctx.fillText(x, cx, yZero + 8);
+                ctx.beginPath();
+                ctx.moveTo(cx, 0); ctx.lineTo(cx, state.height);
+                ctx.stroke();
             }
-        }
 
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
-        for (let y = bottomMathY; y <= topMathY; y++) {
-            if (y !== 0) {
+            for (let y = minY; y <= maxY; y++) {
                 const cy = mathToCanvasY(y);
-                ctx.fillRect(xZero - 5, cy - 1, 10, 2);
-                ctx.fillText(y, xZero - 8, cy);
+                ctx.beginPath();
+                ctx.moveTo(0, cy); ctx.lineTo(state.width, cy);
+                ctx.stroke();
+            }
+
+            // Axes
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(state.width, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, state.height); ctx.stroke();
+
+            // Axis Numbers
+            ctx.fillStyle = "#64748b";
+            ctx.font = "bold 14px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            for (let x = minX; x <= maxX; x++) {
+                if (x === 0) continue;
+                const cx = mathToCanvasX(x);
+                if (cx >= 0 && cx <= state.width) ctx.fillText(x.toString(), cx, originY + 6);
+            }
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            for (let y = minY; y <= maxY; y++) {
+                if (y === 0) continue;
+                const cy = mathToCanvasY(y);
+                if (cy >= 0 && cy <= state.height) ctx.fillText(y.toString(), originX - 8, cy);
             }
         }
-    }
 
-    function drawParabola() {
-        const { effA: a, effB: b, effC: c } = state;
-        const leftMathX = canvasToMathX(0);
-        const rightMathX = canvasToMathX(state.width);
-        const step = (rightMathX - leftMathX) / 200; // Resolution
-
-        ctx.beginPath();
-        ctx.strokeStyle = '#3b82f6'; // Tailwind blue-500
-        ctx.lineWidth = 3;
-
-        let first = true;
-        for (let x = leftMathX; x <= rightMathX; x += step) {
-            const y = a * x * x + b * x + c;
-            const cx = mathToCanvasX(x);
-            const cy = mathToCanvasY(y);
-            
-            if (first) {
-                ctx.moveTo(cx, cy);
-                first = false;
-            } else {
-                ctx.lineTo(cx, cy);
-            }
-        }
-        ctx.stroke();
-    }
-
-    function drawPoint(mathX, mathY, color, radius) {
-        const cx = mathToCanvasX(mathX);
-        const cy = mathToCanvasY(mathY);
-        
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }
-
-    function drawFeatures() {
-        const { effA: a, effB: b, effC: c } = state;
-
-        if (a !== 0) {
-            // Axis of Symmetry
-            const h = -b / (2 * a);
-            const cx_h = mathToCanvasX(h);
+        function drawParabola(a, b, c, color, dashed = false) {
+            if (a === 0 && b === 0 && c === 0) return;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            if (dashed) ctx.setLineDash([5, 5]);
+            else ctx.setLineDash([]);
             
             ctx.beginPath();
-            ctx.strokeStyle = '#f87171'; // red-400
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.moveTo(cx_h, 0);
-            ctx.lineTo(cx_h, state.height);
+            const leftX = canvasToMathX(0);
+            const rightX = canvasToMathX(state.width);
+            const step = (rightX - leftX) / 250;
+
+            let first = true;
+            for (let x = leftX; x <= rightX; x += step) {
+                const y = a * x * x + b * x + c;
+                const cx = mathToCanvasX(x);
+                const cy = mathToCanvasY(y);
+                if (first) { ctx.moveTo(cx, cy); first = false; }
+                else { ctx.lineTo(cx, cy); }
+            }
             ctx.stroke();
-            ctx.setLineDash([]); // Reset dash
+            ctx.setLineDash([]);
+        }
 
-            // Vertex
-            const k = a * h * h + b * h + c;
-            drawPoint(h, k, '#ef4444', 6); // red-500
+        function drawPoint(mathX, mathY, color, label) {
+            const cx = mathToCanvasX(mathX);
+            const cy = mathToCanvasY(mathY);
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.stroke();
+            if (label) {
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 14px sans-serif";
+                ctx.textAlign = "left";
+                ctx.fillText(label, cx + 10, cy - 10);
+            }
+        }
 
-            // Roots
-            const discriminant = b * b - 4 * a * c;
-            if (discriminant >= 0) {
-                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-                drawPoint(x1, 0, '#f97316', 5); // orange-500
-                if (discriminant > 0) {
-                    drawPoint(x2, 0, '#f97316', 5); // orange-500
+        function drawFeatures() {
+            const a = state.effA, b = state.effB, c = state.effC;
+
+            if (a !== 0) {
+                const vx = -b / (2 * a);
+                const vy = c - (b * b) / (4 * a);
+
+                // Axis of Symmetry
+                const cxAxis = mathToCanvasX(vx);
+                ctx.strokeStyle = "#3b82f6";
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath(); ctx.moveTo(cxAxis, 0); ctx.lineTo(cxAxis, state.height); ctx.stroke();
+                ctx.setLineDash([]);
+
+                drawPoint(vx, vy, "#ef4444", `(${round(vx)}, ${round(vy)})`);
+
+                // Roots
+                const disc = b * b - 4 * a * c;
+                if (disc >= 0) {
+                    const r1 = (-b + Math.sqrt(disc)) / (2 * a);
+                    const r2 = (-b - Math.sqrt(disc)) / (2 * a);
+                    drawPoint(r1, 0, "#a855f7", `(${round(r1)}, 0)`);
+                    if (disc > 0) drawPoint(r2, 0, "#a855f7", `(${round(r2)}, 0)`);
                 }
             }
-        } else {
-            // Linear roots
-            if (b !== 0) {
-                drawPoint(-c/b, 0, '#f97316', 5);
-            }
+            drawPoint(0, c, "#10b981", `(0, ${round(c)})`);
         }
 
-        // Y-intercept
-        drawPoint(0, c, '#22c55e', 5); // green-500
-    }
-
-    // Quiz Drawing
-    function drawQuizParabola() {
-        const params = getQuizUserParams();
-        if (!params) return;
-
-        const { a, b, c } = params;
-        const leftMathX = canvasToMathX(0);
-        const rightMathX = canvasToMathX(state.width);
-        const step = (rightMathX - leftMathX) / 200; 
-
-        ctx.beginPath();
-        ctx.strokeStyle = '#6366f1'; // indigo-500
-        ctx.lineWidth = 3;
-
-        let first = true;
-        for (let x = leftMathX; x <= rightMathX; x += step) {
-            const y = a * x * x + b * x + c;
-            const cx = mathToCanvasX(x);
-            const cy = mathToCanvasY(y);
+        function drawQuizOverlay() {
+            let ua = 0, ub = 0, uc = 0;
             
-            if (first) {
-                ctx.moveTo(cx, cy);
-                first = false;
-            } else {
-                ctx.lineTo(cx, cy);
+            // Calculate user's current parabola based on control points
+            if (state.mode === 'quiz1') {
+                const r1 = state.quiz.controlPoints.find(p => p.id === 'root1');
+                const r2 = state.quiz.controlPoints.find(p => p.id === 'root2');
+                const yint = state.quiz.controlPoints.find(p => p.id === 'yint');
+                if (r1 && r2 && yint && r1.x !== r2.x && r1.x !== 0 && r2.x !== 0) {
+                    ua = yint.y / (r1.x * r2.x);
+                    ub = -ua * (r1.x + r2.x);
+                    uc = yint.y;
+                }
+            } else if (state.mode === 'quiz2') {
+                const v = state.quiz.controlPoints.find(p => p.id === 'vertex');
+                const yint = state.quiz.controlPoints.find(p => p.id === 'yint');
+                if (v && yint && v.x !== 0) {
+                    ua = (yint.y - v.y) / (v.x * v.x);
+                    ub = -2 * ua * v.x;
+                    uc = v.y + ua * v.x * v.x;
+                }
+            }
+
+            // Draw user's guessed curve
+            if (ua !== 0 || ub !== 0 || uc !== 0) {
+                drawParabola(ua, ub, uc, '#f59e0b', false); // Amber solid line for guess
+            }
+
+            // Draw target curve if answer was submitted
+            if (state.quiz.showAnswer) {
+                drawParabola(state.quiz.targetA, state.quiz.targetB, state.quiz.targetC, '#38bdf8', true); // Blue dashed
+            }
+
+            // Draw Draggable Control Points
+            state.quiz.controlPoints.forEach((pt) => {
+                const cx = mathToCanvasX(pt.x);
+                const cy = mathToCanvasY(pt.y);
+                ctx.fillStyle = pt.color || "#f59e0b";
+                ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2.5; ctx.stroke();
+                
+                if (pt.label) {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 14px sans-serif";
+                    ctx.textAlign = "left";
+                    ctx.fillText(pt.label, cx + 14, cy - 12);
+                }
+            });
+        }
+
+        function draw() {
+            drawGrid();
+            if (state.mode === 'explore') {
+                drawParabola(state.effA, state.effB, state.effC, '#38bdf8');
+                drawFeatures();
+            } else if (state.mode.startsWith('quiz')) {
+                drawQuizOverlay();
             }
         }
-        ctx.stroke();
-    }
 
-    function drawQuizFeatures() {
-        state.quiz.points.forEach(pt => {
-            const isHoveredOrDragged = (state.quiz.draggedPointId === pt.id);
-            const radius = isHoveredOrDragged ? 8 : 6;
-            drawPoint(pt.x, pt.y, pt.color, radius);
-        });
-    }
-
-    function drawQuizTargetGraph() {
-        if (!state.quiz.showTargetGraph) return;
-
-        const { a, b, c } = state.quiz.targetEq;
-        const leftMathX = canvasToMathX(0);
-        const rightMathX = canvasToMathX(state.width);
-        const step = (rightMathX - leftMathX) / 200; 
-
-        ctx.beginPath();
-        ctx.strokeStyle = '#22c55e'; // green-500 dashed line
-        ctx.lineWidth = 3;
-        ctx.setLineDash([8, 8]); 
-
-        let first = true;
-        for (let x = leftMathX; x <= rightMathX; x += step) {
-            const y = a * x * x + b * x + c;
-            const cx = mathToCanvasX(x);
-            const cy = mathToCanvasY(y);
+        function setupQuiz1Question() {
+            state.quiz.showAnswer = false;
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('quizSubmitBtn').classList.remove('hidden');
+            document.getElementById('quizNextBtn').classList.add('hidden');
+            document.getElementById('quizTitle').innerText = "Quiz 1: Roots & Y-Intercept";
             
-            if (first) {
-                ctx.moveTo(cx, cy);
-                first = false;
+            let r1, r2, a;
+            do {
+                r1 = Math.floor(Math.random() * 7) - 3;
+                r2 = Math.floor(Math.random() * 7) - 3;
+                a = (Math.floor(Math.random() * 2) + 1) * (Math.random() < 0.5 ? 1 : -1);
+            } while (r1 === r2 || r1 === 0 || r2 === 0);
+            
+            state.quiz.targetA = a;
+            state.quiz.targetB = -a * (r1 + r2);
+            state.quiz.targetC = a * r1 * r2;
+            
+            state.quiz.controlPoints = [
+                { id: 'root1', x: -4, y: 0, color: '#a855f7', label: 'x-int 1', lockY: true },
+                { id: 'root2', x: 4, y: 0, color: '#a855f7', label: 'x-int 2', lockY: true },
+                { id: 'yint', x: 0, y: -4, color: '#10b981', label: 'y-int', lockX: true }
+            ];
+            
+            document.getElementById('quizQuestionText').innerText = "Find the graph of the function by dragging the two x-intercepts and the y-intercept.";
+            renderMath("f(x) = " + formatEquation(state.quiz.targetA, state.quiz.targetB, state.quiz.targetC), document.getElementById('quizQuestionLatex'));
+        }
+
+        function setupQuiz2Question() {
+            state.quiz.showAnswer = false;
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('quizSubmitBtn').classList.remove('hidden');
+            document.getElementById('quizNextBtn').classList.add('hidden');
+            document.getElementById('quizTitle').innerText = "Quiz 2: Vertex Form";
+            
+            let h, k, a;
+            do { h = Math.floor(Math.random() * 7) - 3; } while (h === 0); // ensure h!=0 so a is resolvable
+            
+            if (Math.random() < 0.5) { // Double root
+                k = 0; a = (Math.floor(Math.random() * 2) + 1) * (Math.random() < 0.5 ? 1 : -1);
+            } else { // No real root
+                a = (Math.floor(Math.random() * 2) + 1) * (Math.random() < 0.5 ? 1 : -1);
+                k = (Math.floor(Math.random() * 3) + 1) * Math.sign(a);
+            }
+            
+            state.quiz.targetA = a;
+            state.quiz.targetB = -2 * a * h;
+            state.quiz.targetC = a * h * h + k;
+            
+            state.quiz.controlPoints = [
+                { id: 'vertex', x: 2, y: 2, color: '#ef4444', label: 'Vertex' },
+                { id: 'yint', x: 0, y: -2, color: '#10b981', label: 'y-int', lockX: true }
+            ];
+            
+            document.getElementById('quizQuestionText').innerText = "Find the graph of the function by dragging the vertex and the y-intercept.";
+            renderMath("f(x) = " + formatVertexEquation(a, h, k), document.getElementById('quizQuestionLatex'));
+        }
+
+        function updateProperties() {
+            const a = state.effA, b = state.effB, c = state.effC;
+            document.getElementById('propDirection').innerText = a > 0 ? "Upward" : (a < 0 ? "Downward" : "None");
+            
+            if (a !== 0) {
+                const vx = -b / (2 * a);
+                const vy = c - (b * b) / (4 * a);
+                renderMath(`(${round(vx)}, ${round(vy)})`, document.getElementById('propVertex'));
+                renderMath(`x = ${round(vx)}`, document.getElementById('propAxis'));
+                
+                const disc = b * b - 4 * a * c;
+                if (disc > 0) {
+                    const r1 = (-b + Math.sqrt(disc)) / (2 * a);
+                    const r2 = (-b - Math.sqrt(disc)) / (2 * a);
+                    renderMath(`(${round(r1)}, 0), (${round(r2)}, 0)`, document.getElementById('propRoots'));
+                } else if (disc === 0) {
+                    renderMath(`(${round(-b/(2*a))}, 0)`, document.getElementById('propRoots'));
+                } else {
+                    document.getElementById('propRoots').innerText = "None (No real roots)";
+                }
             } else {
-                ctx.lineTo(cx, cy);
+                document.getElementById('propVertex').innerText = "N/A";
+                document.getElementById('propAxis').innerText = "N/A";
+                if (b !== 0) renderMath(`(${round(-c/b)}, 0)`, document.getElementById('propRoots'));
+                else document.getElementById('propRoots').innerText = c === 0 ? "All Reals" : "None";
             }
+            renderMath(`(0, ${round(c)})`, document.getElementById('propYInt'));
         }
-        ctx.stroke();
-        ctx.setLineDash([]); // Reset dash
-    }
 
-    function draw() {
-        drawGrid();
-        
-        if (state.mode === 'explore') {
-            drawFeatures(); 
-            drawParabola();
-            drawFeatures(); 
-        } else if (state.mode.startsWith('quiz') && state.quiz.active) {
-            drawQuizParabola();
-            drawQuizTargetGraph();
-            drawQuizFeatures();
-        }
-    }
-
-    // Animation Loop
-    function renderLoop() {
-        let changed = false;
-
-        ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
-            if (state.animations[param]) {
-                const speed = 0.02;
-                state.animationAngles[param] += speed;
+        function update() {
+            if (state.mode === 'explore') {
+                if (state.formMode === 'standard') {
+                    state.effA = state.a; state.effB = state.b; state.effC = state.c;
+                    renderMath("f(x) = " + formatEquation(state.a, state.b, state.c), document.getElementById('equationDisplay'));
+                } else {
+                    state.effA = state.va; state.effB = -2 * state.va * state.h; state.effC = state.va * state.h * state.h + state.k;
+                    renderMath("f(x) = " + formatVertexEquation(state.va, state.h, state.k), document.getElementById('equationDisplay'));
+                }
                 
-                const min = parseFloat(sliders[param].min);
-                const max = parseFloat(sliders[param].max);
-                const range = max - min;
-                const mid = (max + min) / 2;
+                document.getElementById('aVal').innerText = state.a.toFixed(1);
+                document.getElementById('bVal').innerText = state.b.toFixed(1);
+                document.getElementById('cVal').innerText = state.c.toFixed(1);
+                document.getElementById('vaVal').innerText = state.va.toFixed(1);
+                document.getElementById('hVal').innerText = state.h.toFixed(1);
+                document.getElementById('kVal').innerText = state.k.toFixed(1);
                 
-                // Sine wave oscillation for smooth slider sweeping
-                state[param] = mid + (range / 2) * Math.sin(state.animationAngles[param]);
-                changed = true;
+                updateProperties();
             }
-        });
+            draw();
+        }
 
-        if (changed) {
+        function toggleFormMode(mode) {
+            state.formMode = mode;
+            if (mode === 'standard') {
+                document.getElementById('slidersStandard').classList.remove('hidden');
+                document.getElementById('slidersVertex').classList.add('hidden');
+                document.getElementById('formStdBtn').className = "flex-1 bg-white shadow-sm py-2 px-3 rounded-lg text-sm font-bold text-blue-600 transition-all";
+                document.getElementById('formVtxBtn').className = "flex-1 py-2 px-3 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all";
+                renderMath("f(x) = ax^2 + bx + c", document.getElementById('staticFormLabel'));
+            } else {
+                document.getElementById('slidersStandard').classList.add('hidden');
+                document.getElementById('slidersVertex').classList.remove('hidden');
+                document.getElementById('formVtxBtn').className = "flex-1 bg-white shadow-sm py-2 px-3 rounded-lg text-sm font-bold text-blue-600 transition-all";
+                document.getElementById('formStdBtn').className = "flex-1 py-2 px-3 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 transition-all";
+                renderMath("f(x) = a(x-h)^2 + k", document.getElementById('staticFormLabel'));
+            }
             update();
         }
 
-        requestAnimationFrame(renderLoop);
-    }
+        function toggleMode(modeName) {
+            if (autoNextTimeout) clearTimeout(autoNextTimeout);
 
-    // Interactive Tooltip and Dragging logic
-    function handleMouseDown(e) {
-        if (!state.mode.startsWith('quiz') || !state.quiz.active || state.quiz.isEvaluating) return;
-        
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        for (let pt of state.quiz.points) {
-            const px = mathToCanvasX(pt.x);
-            const py = mathToCanvasY(pt.y);
-            const dist = Math.hypot(mouseX - px, mouseY - py);
-            if (dist < 15) { 
-                state.quiz.draggedPointId = pt.id;
-                break;
+            if (modeName.startsWith('quiz') && state.mode !== modeName) {
+                state.quiz.scoreCorrect = 0;
+                state.quiz.scoreAttempted = 0;
+                document.getElementById('quizScoreText').innerText = `0 / 0 (0%)`;
             }
-        }
-    }
 
-    function handleMouseUp(e) {
-        state.quiz.draggedPointId = null;
-    }
-
-    function handleMouseMove(e) {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        if (state.mode.startsWith('quiz') && state.quiz.active) {
-            if (state.quiz.isEvaluating) {
-                canvas.style.cursor = 'default';
-                tooltip.classList.add('hidden');
-                return;
-            }
+            state.mode = modeName;
+            state.quiz.showAnswer = false;
             
-            if (state.quiz.draggedPointId) {
-                // Dragging point
-                const pt = state.quiz.points.find(p => p.id === state.quiz.draggedPointId);
+            document.getElementById('btnExplore').className = modeName === 'explore' ? "px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition-all" : "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+            
+            const q1Btn = document.getElementById('toggleQuiz1Btn');
+            const q2Btn = document.getElementById('toggleQuiz2Btn');
+            
+            if (modeName === 'quiz1') {
+                q1Btn.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition-all";
+                q1Btn.disabled = false;
                 
-                if (pt.type === 'root') {
-                    let newX = Math.round(canvasToMathX(mouseX));
-                    // Prevent roots from snapping exactly to 0 to keep parabola valid
-                    if (newX === 0) newX = canvasToMathX(mouseX) >= 0 ? 1 : -1; 
-                    pt.x = newX;
-                } else if (pt.type === 'yint') {
-                    pt.y = Math.round(canvasToMathY(mouseY));
-                } else if (pt.type === 'vertex') {
-                    let newX = Math.round(canvasToMathX(mouseX));
-                    // Prevent vertex from snapping exactly to 0, which breaks vertex+y-intercept calculation
-                    if (newX === 0) newX = canvasToMathX(mouseX) >= 0 ? 1 : -1; 
-                    pt.x = newX;
-                    pt.y = Math.round(canvasToMathY(mouseY));
+                q2Btn.className = "px-3 py-1.5 rounded-lg text-slate-400 opacity-50 cursor-not-allowed transition-all";
+                q2Btn.disabled = true;
+            } else if (modeName === 'quiz2') {
+                q2Btn.className = "px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition-all";
+                q2Btn.disabled = false;
+                
+                q1Btn.className = "px-3 py-1.5 rounded-lg text-slate-400 opacity-50 cursor-not-allowed transition-all";
+                q1Btn.disabled = true;
+            } else {
+                q1Btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+                q1Btn.disabled = false;
+                
+                q2Btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all";
+                q2Btn.disabled = false;
+            }
+
+            if (modeName === 'explore') {
+                document.getElementById('exploreModeUI').classList.remove('hidden');
+                document.getElementById('exploreHeaderInfo').classList.remove('hidden');
+                document.getElementById('quizModeUI').classList.add('hidden');
+                update();
+            } else {
+                document.getElementById('exploreModeUI').classList.add('hidden');
+                document.getElementById('exploreHeaderInfo').classList.add('hidden');
+                document.getElementById('quizModeUI').classList.remove('hidden');
+                
+                if (!state.quiz.playerName) {
+                    document.getElementById('nameModal').classList.remove('hidden');
+                    document.getElementById('modalNameInput').focus();
+                } else {
+                    document.getElementById('quizStudentNameDisplay').innerText = state.quiz.playerName;
                 }
                 
-                update(); 
-                tooltip.classList.add('hidden');
-                return;
+                if (modeName === 'quiz1') setupQuiz1Question();
+                else setupQuiz2Question();
+                draw();
             }
+        }
+
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else if (e.changedTouches && e.changedTouches.length > 0) {
+                clientX = e.changedTouches[0].clientX;
+                clientY = e.changedTouches[0].clientY;
+            }
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function handlePointerDown(e) {
+            if (state.mode === 'explore') return;
+            if (state.quiz.showAnswer) return; // Disallow dragging after submit
+            const pos = getPointerPos(e);
+            const mathX = canvasToMathX(pos.x);
+            const mathY = canvasToMathY(pos.y);
             
-            // Hover styling
-            let hovering = false;
-            for (let pt of state.quiz.points) {
-                const px = mathToCanvasX(pt.x);
-                const py = mathToCanvasY(pt.y);
-                if (Math.hypot(mouseX - px, mouseY - py) < 15) {
-                    hovering = true;
+            for (let pt of state.quiz.controlPoints) {
+                if (Math.hypot(pt.x - mathX, pt.y - mathY) < 1.0) {
+                    state.quiz.draggedPointId = pt.id;
                     break;
                 }
             }
-            canvas.style.cursor = hovering ? 'grab' : 'crosshair';
-            tooltip.classList.add('hidden');
-            return;
         }
 
-        // Standard Explore Mode Tooltip
-        canvas.style.cursor = 'crosshair';
-        const mathX = canvasToMathX(mouseX);
-        const mathY = state.effA * mathX * mathX + state.effB * mathX + state.effC;
-        
-        const canvasY = mathToCanvasY(mathY);
+        function handlePointerMove(e) {
+            const pos = getPointerPos(e);
+            const mathX = canvasToMathX(pos.x);
+            const mathY = canvasToMathY(pos.y);
 
-        // Only show tooltip if hovering close to the curve vertically
-        if (Math.abs(mouseY - canvasY) < 30) {
-            tooltip.classList.remove('hidden');
-            tooltip.style.left = `${mouseX}px`;
-            tooltip.style.top = `${canvasY - 10}px`;
-            renderMath(`(${round(mathX)}, ${round(mathY)})`, tooltip);
-        } else {
-            tooltip.classList.add('hidden');
+            // Dragging Logic
+            if (state.quiz.draggedPointId && !state.quiz.showAnswer) {
+                e.preventDefault(); // Prevent scrolling while dragging
+                const pt = state.quiz.controlPoints.find(p => p.id === state.quiz.draggedPointId);
+                if (pt) {
+                    if (!pt.lockX) {
+                        let newX = Math.round(mathX);
+                        // Prevent Vertex x from being exactly 0 in Quiz 2 to avoid singular math
+                        if (state.mode === 'quiz2' && pt.id === 'vertex' && newX === 0) {
+                            newX = mathX < 0 ? -1 : 1;
+                        }
+                        pt.x = newX;
+                    }
+                    if (!pt.lockY) pt.y = Math.round(mathY);
+                    
+                    // Prevent roots overlapping exactly in Quiz 1
+                    if (state.mode === 'quiz1' && pt.id.startsWith('root')) {
+                        const other = pt.id === 'root1' ? 'root2' : 'root1';
+                        const oPt = state.quiz.controlPoints.find(p => p.id === other);
+                        if (oPt && pt.x === oPt.x) pt.x = pt.x + (mathX > pt.x ? 1 : -1);
+                        if (pt.x === 0) pt.x = mathX > 0 ? 1 : -1;
+                    }
+                    draw();
+                }
+                return;
+            }
+
+            // Hover tooltip logic (Explore Mode)
+            if (state.mode === 'explore') {
+                const calcY = state.effA * mathX * mathX + state.effB * mathX + state.effC;
+                const canvasY = mathToCanvasY(calcY);
+                if (Math.abs(pos.y - canvasY) < 20) {
+                    tooltip.style.left = `${pos.x + 12}px`;
+                    tooltip.style.top = `${pos.y + 12}px`;
+                    renderMath(`(${round(mathX)}, ${round(calcY)})`, tooltip);
+                    tooltip.classList.remove('hidden');
+                } else {
+                    tooltip.classList.add('hidden');
+                }
+            } else {
+                tooltip.classList.add('hidden');
+            }
         }
-    }
 
-    // Start application after all styles and libraries are fully loaded
-    window.onload = function() {
-        init();
-    };
+        function handlePointerUp() {
+            state.quiz.draggedPointId = null;
+        }
 
-</script>
+        function sendScoreToGAS(scoreCorrect, scoreAttempted) {
+            if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("PASTE_YOUR")) return;
+            const payload = {
+                name: state.quiz.playerName || 'Anonymous',
+                mode: state.mode,
+                scoreCorrect: scoreCorrect,
+                scoreAttempted: scoreAttempted,
+                timestamp: new Date().toISOString()
+            };
+            fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.log('GAS sync err'));
+        }
+
+        function init() {
+            canvas = document.getElementById('graphCanvas');
+            ctx = canvas.getContext('2d');
+            tooltip = document.getElementById('tooltip');
+
+            // Render Static LaTeX
+            renderMath("f(x)", document.getElementById('logoFormula'));
+            renderMath("a", document.getElementById('labelSliderA'));
+            renderMath("b", document.getElementById('labelSliderB'));
+            renderMath("c", document.getElementById('labelSliderC'));
+            renderMath("a", document.getElementById('labelSliderVa'));
+            renderMath("h", document.getElementById('labelSliderH'));
+            renderMath("k", document.getElementById('labelSliderK'));
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Slider Listeners
+            ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
+                const slider = document.getElementById('slider' + param.charAt(0).toUpperCase() + param.slice(1));
+                const animBtn = document.getElementById('anim' + param.charAt(0).toUpperCase() + param.slice(1));
+                
+                slider.addEventListener('input', (e) => {
+                    state[param] = parseFloat(e.target.value);
+                    state.animations[param] = false;
+                    update();
+                });
+                
+                animBtn.addEventListener('click', () => { state.animations[param] = !state.animations[param]; });
+            });
+
+            // Toggles
+            document.getElementById('formStdBtn').addEventListener('click', () => toggleFormMode('standard'));
+            document.getElementById('formVtxBtn').addEventListener('click', () => toggleFormMode('vertex'));
+            document.getElementById('btnExplore').addEventListener('click', () => toggleMode('explore'));
+            document.getElementById('toggleQuiz1Btn').addEventListener('click', () => toggleMode('quiz1'));
+            document.getElementById('toggleQuiz2Btn').addEventListener('click', () => toggleMode('quiz2'));
+            document.getElementById('exitQuizBtn').addEventListener('click', () => toggleMode('explore'));
+
+            // Viewport
+            document.getElementById('zoomInBtn').addEventListener('click', () => { state.scale *= 1.2; draw(); });
+            document.getElementById('zoomOutBtn').addEventListener('click', () => { state.scale /= 1.2; draw(); });
+            document.getElementById('resetViewBtn').addEventListener('click', () => { state.scale = 35; draw(); });
+
+            // Modal Interactions
+            document.getElementById('modalStartBtn').addEventListener('click', () => {
+                const name = document.getElementById('modalNameInput').value.trim();
+                if (name) {
+                    state.quiz.playerName = name;
+                    document.getElementById('quizStudentNameDisplay').innerText = name;
+                    document.getElementById('nameModal').classList.add('hidden');
+                }
+            });
+            document.getElementById('modalCancelBtn').addEventListener('click', () => {
+                document.getElementById('nameModal').classList.add('hidden');
+                toggleMode('explore');
+            });
+
+            // Interactions
+            canvas.addEventListener('mousedown', handlePointerDown);
+            canvas.addEventListener('mousemove', handlePointerMove);
+            window.addEventListener('mouseup', handlePointerUp);
+            canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+            canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+            canvas.addEventListener('touchend', handlePointerUp);
+
+            // Quiz Submission
+            document.getElementById('quizSubmitBtn').addEventListener('click', () => {
+                const feedback = document.getElementById('quizFeedback');
+                
+                if (!state.quiz.playerName) {
+                    document.getElementById('nameModal').classList.remove('hidden');
+                    return;
+                }
+                
+                state.quiz.scoreAttempted++;
+                let ua = 0, ub = 0, uc = 0;
+                
+                if (state.mode === 'quiz1') {
+                    const r1 = state.quiz.controlPoints.find(p => p.id === 'root1');
+                    const r2 = state.quiz.controlPoints.find(p => p.id === 'root2');
+                    const yint = state.quiz.controlPoints.find(p => p.id === 'yint');
+                    if (r1 && r2 && yint && r1.x !== r2.x && r1.x !== 0 && r2.x !== 0) {
+                        ua = yint.y / (r1.x * r2.x);
+                        ub = -ua * (r1.x + r2.x);
+                        uc = yint.y;
+                    }
+                } else if (state.mode === 'quiz2') {
+                    const v = state.quiz.controlPoints.find(p => p.id === 'vertex');
+                    const yint = state.quiz.controlPoints.find(p => p.id === 'yint');
+                    if (v && yint && v.x !== 0) {
+                        ua = (yint.y - v.y) / (v.x * v.x);
+                        ub = -2 * ua * v.x;
+                        uc = v.y + ua * v.x * v.x;
+                    }
+                }
+                
+                const diffA = Math.abs(ua - state.quiz.targetA);
+                const diffB = Math.abs(ub - state.quiz.targetB);
+                const diffC = Math.abs(uc - state.quiz.targetC);
+                let correct = (diffA < 0.2 && diffB < 0.5 && diffC < 0.5);
+                
+                feedback.classList.remove('hidden');
+                if (correct) {
+                    state.quiz.scoreCorrect++;
+                    feedback.className = "p-3 rounded-xl text-sm font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 mt-3 text-center";
+                    feedback.innerText = "Correct! Great job! Loading next question in 3s...";
+                    
+                    if (autoNextTimeout) clearTimeout(autoNextTimeout);
+                    autoNextTimeout = setTimeout(() => {
+                        if (state.mode === 'quiz1') setupQuiz1Question();
+                        else if (state.mode === 'quiz2') setupQuiz2Question();
+                        draw();
+                    }, 3000);
+                } else {
+                    feedback.className = "p-3 rounded-xl text-sm font-semibold bg-red-100 text-red-800 border border-red-200 mt-3 text-center";
+                    feedback.innerText = "Not quite. Check the dashed blue line for the correct answer.";
+                }
+                
+                const pct = Math.round((state.quiz.scoreCorrect / state.quiz.scoreAttempted) * 100) || 0;
+                document.getElementById('quizScoreText').innerText = `${state.quiz.scoreCorrect} / ${state.quiz.scoreAttempted} (${pct}%)`;
+                
+                document.getElementById('quizSubmitBtn').classList.add('hidden');
+                document.getElementById('quizNextBtn').classList.remove('hidden');
+                
+                state.quiz.showAnswer = true;
+                draw();
+                sendScoreToGAS(state.quiz.scoreCorrect, state.quiz.scoreAttempted);
+            });
+
+            document.getElementById('quizNextBtn').addEventListener('click', () => {
+                if (autoNextTimeout) clearTimeout(autoNextTimeout);
+                if (state.mode === 'quiz1') setupQuiz1Question();
+                else setupQuiz2Question();
+                draw();
+            });
+
+            // Auto-animation Loop
+            function animationLoop() {
+                let changed = false;
+                ['a', 'b', 'c', 'va', 'h', 'k'].forEach(param => {
+                    if (state.animations[param]) {
+                        state.animationAngles[param] += 0.03;
+                        let maxVal = (param === 'a' || param === 'va') ? 4 : 8;
+                        state[param] = round(Math.sin(state.animationAngles[param]) * maxVal, 1);
+                        document.getElementById('slider' + param.charAt(0).toUpperCase() + param.slice(1)).value = state[param];
+                        changed = true;
+                    }
+                });
+                if (changed) update();
+                requestAnimationFrame(animationLoop);
+            }
+
+            toggleFormMode('standard');
+            requestAnimationFrame(animationLoop);
+        }
+
+        window.onload = init;
+    </script>
 </body>
 </html>
